@@ -1,0 +1,17 @@
+flowchart LR
+    Start((●)) -->|Создание брони| active
+    
+    active -->|Ранняя отмена ≥2ч| cancelled
+    active -->|Поздняя отмена <2ч| late_cancel
+    active -->|Слот отменен клубом| club_cancelled
+    active -->|Старт прошел| past["Прошедшая<br/>(производное)"]
+    
+    cancelled --> End((◉))
+    late_cancel --> End
+    club_cancelled --> End
+    past --> End
+
+    classDef terminal fill:#f9f9f9,stroke:#333,stroke-width:2px
+    classDef derived fill:#fff3e0,stroke:#e65100,stroke-width:2px,stroke-dasharray: 5 5
+    class cancelled,late_cancel,club_cancelled terminal
+    class past derived
