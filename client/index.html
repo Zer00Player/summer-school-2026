@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Скалодром — Запись на тренировку</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -19,6 +15,7 @@
             min-height: 100vh;
             position: relative;
             padding-bottom: 70px;
+            color: #1a1a1a;
         }
 
         /* Шапка */
@@ -27,89 +24,159 @@
             color: white;
             padding: 20px;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
-
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-        }
+        .header h1 { font-size: 20px; font-weight: 600; }
 
         /* Экраны */
-        .screen {
-            display: none;
-            padding: 15px;
-            animation: fadeIn 0.3s;
-        }
+        .screen { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .screen.active {
-            display: block;
+        /* ===== SCR-01: Фильтр дат ===== */
+        .date-filter {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 10px 0 15px;
+            scrollbar-width: none;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Карточки слотов */
-        .slot-card {
+        .date-filter::-webkit-scrollbar { display: none; }
+        .date-chip {
+            flex-shrink: 0;
+            padding: 10px 14px;
             background: white;
             border-radius: 12px;
-            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            min-width: 64px;
+        }
+        .date-chip.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .date-chip .day-name { font-size: 11px; text-transform: uppercase; opacity: 0.7; }
+        .date-chip .day-num { font-size: 18px; font-weight: 700; margin-top: 2px; }
+        .date-chip .month { font-size: 10px; opacity: 0.7; }
+
+        /* Карточка слота */
+        .slot-card {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
             margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             cursor: pointer;
             transition: transform 0.2s;
+            border-left: 4px solid #667eea;
         }
-
-        .slot-card:hover {
-            transform: translateY(-2px);
-        }
-
+        .slot-card:active { transform: scale(0.98); }
         .slot-card.cancelled {
-            opacity: 0.6;
-            background: #f9f9f9;
+            border-left-color: #ff9800;
+            background: #fff8e1;
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+        .slot-card.full {
+            border-left-color: #9e9e9e;
+            background: #f5f5f5;
         }
 
-        .slot-date {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 5px;
-        }
-
-        .slot-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .slot-info {
+        .slot-top {
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .slot-time { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+        .slot-type {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: #e3f2fd;
+            color: #1976d2;
+            font-weight: 600;
+        }
+        .slot-type.experienced { background: #fce4ec; color: #c2185b; }
+
+        .slot-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .slot-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .slot-seats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
             color: #666;
         }
+        .seats-bar {
+            width: 80px;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .seats-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .seats-fill.full { background: #9e9e9e; }
 
-        .slot-status {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            margin-top: 8px;
+        .slot-action {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .slot-action.disabled {
+            background: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+        .slot-action.cancelled-btn {
+            background: #fff3e0;
+            color: #e65100;
         }
 
-        .status-available {
-            background: #d4edda;
-            color: #155724;
+        /* Состояния: Скелетон */
+        .skeleton {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
         }
-
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
+        .skeleton-line {
+            height: 14px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 8px;
         }
-
-        .status-booked {
-            background: #cce5ff;
-            color: #004085;
+        .skeleton-line.short { width: 40%; }
+        .skeleton-line.medium { width: 70%; }
+        .skeleton-line.long { width: 100%; }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         /* Empty state */
@@ -118,174 +185,20 @@
             padding: 60px 20px;
             color: #888;
         }
+        .empty-state-icon { font-size: 64px; margin-bottom: 16px; }
+        .empty-state h3 { color: #333; margin-bottom: 8px; font-size: 18px; }
+        .empty-state p { font-size: 14px; margin-bottom: 20px; }
 
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        /* Кнопки */
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: opacity 0.2s;
-        }
-
-        .btn:active {
-            opacity: 0.8;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #e9ecef;
-            color: #333;
-        }
-
-        /* Детали слота */
-        .detail-header {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-
-        .detail-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        /* Выбор снаряжения */
-        .equipment-options {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-
-        .equipment-options h3 {
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .radio-option {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-
-        .radio-option.selected {
-            border-color: #667eea;
-            background: #f8f9ff;
-        }
-
-        .radio-option input {
-            margin-right: 10px;
-        }
-
-        /* Звёзды рейтинга */
-        .rating {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .star {
-            font-size: 36px;
-            cursor: pointer;
-            color: #ddd;
-            transition: color 0.2s;
-        }
-
-        .star.active {
-            color: #ffc107;
-        }
-
-        /* Уведомления */
-        .notification {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .notification.cancel {
-            border-left-color: #dc3545;
-        }
-
-        .notification-time {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 5px;
-        }
-
-        /* Нижняя навигация */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-
-        .nav-item {
+        /* Error state */
+        .error-state {
             text-align: center;
-            cursor: pointer;
-            color: #888;
-            font-size: 12px;
-            transition: color 0.2s;
+            padding: 60px 20px;
         }
+        .error-state-icon { font-size: 64px; margin-bottom: 16px; }
+        .error-state h3 { color: #333; margin-bottom: 8px; }
+        .error-state p { color: #666; font-size: 14px; margin-bottom: 20px; }
 
-        .nav-item.active {
-            color: #667eea;
-        }
-
-        .nav-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-
-        /* Назад */
+        /* ===== SCR-02: Подтверждение ===== */
         .back-btn {
             background: none;
             border: none;
@@ -296,143 +209,383 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            font-weight: 600;
         }
+
+        .detail-card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .detail-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-row .label { color: #666; }
+        .detail-row .value { font-weight: 600; }
+
+        /* Карточки выбора снаряжения */
+        .equipment-section h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        .equipment-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .equipment-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            padding: 20px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .equipment-card.selected {
+            border-color: #667eea;
+            background: #f0f2ff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        .equipment-card .icon { font-size: 36px; margin-bottom: 8px; }
+        .equipment-card .title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .equipment-card .desc { font-size: 11px; color: #666; }
+
+        /* Кнопки */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:disabled {
+            background: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+        .btn-danger { background: #ffebee; color: #c62828; }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+
+        .btn .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== SCR-03: Bottom Sheet отказа ===== */
+        .bottom-sheet-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            display: none;
+            animation: fadeInOverlay 0.3s;
+        }
+        .bottom-sheet-overlay.active { display: block; }
+        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+        .bottom-sheet {
+            position: fixed;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            z-index: 201;
+            animation: slideUp 0.3s;
+        }
+        @keyframes slideUp { from { transform: translate(-50%, 100%); } to { transform: translate(-50%, 0); } }
+
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+        .sheet-icon {
+            font-size: 56px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .sheet-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+        .sheet-message {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .sheet-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Мои записи */
+        .booking-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .status-active { background: #e8f5e9; color: #2e7d32; }
+        .status-cancelled-client { background: #ffebee; color: #c62828; }
+        .status-cancelled-gym { background: #fff3e0; color: #e65100; }
+
+        /* Звёзды */
+        .rating { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
+        .star { font-size: 40px; cursor: pointer; color: #ddd; transition: color 0.2s; }
+        .star.active { color: #ffc107; }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            min-height: 100px;
+            font-family: inherit;
+            resize: vertical;
+            font-size: 14px;
+        }
+
+        /* Уведомления */
+        .notification {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .notification.cancel { border-left-color: #ff9800; }
+        .notification-time { font-size: 12px; color: #888; margin-bottom: 4px; }
+        .notification strong { display: block; margin-bottom: 4px; }
+        .notification p { font-size: 13px; color: #666; line-height: 1.4; }
+
+        /* Нижняя навигация */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+            z-index: 100;
+        }
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            color: #888;
+            font-size: 11px;
+            transition: color 0.2s;
+            padding: 6px 12px;
+        }
+        .nav-item.active { color: #667eea; }
+        .nav-icon { font-size: 24px; margin-bottom: 2px; }
+
+        /* Pull-to-refresh индикатор */
+        .pull-indicator {
+            text-align: center;
+            padding: 10px;
+            color: #667eea;
+            font-size: 13px;
+            display: none;
+        }
+        .pull-indicator.active { display: block; }
     </style>
 </head>
 <body>
-    <!-- Шапка -->
     <div class="header">
         <h1>🧗 Скалодром</h1>
     </div>
 
-    <!-- Экран 1: Список слотов -->
+    <!-- ===== SCR-01: Главный экран ===== -->
     <div id="screen-slots" class="screen active">
-        <h2 style="margin-bottom: 15px; font-size: 18px;">Ближайшие тренировки</h2>
-        
-        <div class="slot-card" onclick="showSlotDetail(1)">
-            <div class="slot-date">Сегодня, 18:00</div>
-            <div class="slot-title">Болдеринг для новичков</div>
-            <div class="slot-info">
-                <span>⏱ 1.5 часа</span>
-                <span>👥 5/8 мест</span>
+        <!-- Фильтр дат (7 дней) -->
+        <div class="date-filter" id="dateFilter"></div>
+
+        <!-- Pull-to-refresh -->
+        <div class="pull-indicator" id="pullIndicator">Обновление...</div>
+
+        <!-- Состояние: Загрузка (скелетон) -->
+        <div id="state-loading">
+            <div class="skeleton">
+                <div class="skeleton-line short"></div>
+                <div class="skeleton-line long"></div>
+                <div class="skeleton-line medium"></div>
             </div>
-            <div class="slot-status status-available">Свободно</div>
+            <div class="skeleton">
+                <div class="skeleton-line short"></div>
+                <div class="skeleton-line long"></div>
+                <div class="skeleton-line medium"></div>
+            </div>
+            <div class="skeleton">
+                <div class="skeleton-line short"></div>
+                <div class="skeleton-line long"></div>
+                <div class="skeleton-line medium"></div>
+            </div>
         </div>
 
-        <div class="slot-card" onclick="showSlotDetail(2)">
-            <div class="slot-date">Завтра, 19:30</div>
-            <div class="slot-title">Трассы с верёвкой (опытные)</div>
-            <div class="slot-info">
-                <span>⏱ 1.5 часа</span>
-                <span>👥 12/16 мест</span>
-            </div>
-            <div class="slot-status status-available">Свободно</div>
+        <!-- Состояние: Данные есть -->
+        <div id="state-data" style="display: none;"></div>
+
+        <!-- Состояние: Empty state -->
+        <div id="state-empty" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">📅</div>
+            <h3>Пока нет тренировок</h3>
+            <p>На выбранные даты свободных слотов нет. Попробуй выбрать другой день.</p>
+            <button class="btn btn-primary" style="max-width: 240px; margin: 0 auto;" onclick="resetDateFilter()">Выбрать другую дату</button>
         </div>
 
-        <div class="slot-card cancelled">
-            <div class="slot-date">Пт, 20:00</div>
-            <div class="slot-title">Болдеринг для новичков</div>
-            <div class="slot-info">
-                <span>⏱ 1.5 часа</span>
-                <span>👥 —</span>
-            </div>
-            <div class="slot-status status-cancelled">Отменено скалодромом</div>
-        </div>
-
-        <div class="slot-card" onclick="showSlotDetail(3)">
-            <div class="slot-date">Сб, 14:00</div>
-            <div class="slot-title">Трассы с верёвкой (опытные)</div>
-            <div class="slot-info">
-                <span>⏱ 1.5 часа</span>
-                <span>👥 8/16 мест</span>
-            </div>
-            <div class="slot-status status-available">Свободно</div>
+        <!-- Состояние: Ошибка -->
+        <div id="state-error" class="error-state" style="display: none;">
+            <div class="error-state-icon">😕</div>
+            <h3>Не удалось загрузить расписание</h3>
+            <p>Проверь подключение к интернету и попробуй снова</p>
+            <button class="btn btn-primary" style="max-width: 240px; margin: 0 auto;" onclick="reloadData()">🔄 Повторить</button>
         </div>
     </div>
 
-    <!-- Экран 2: Детали слота -->
-    <div id="screen-detail" class="screen">
-        <button class="back-btn" onclick="showScreen('screen-slots')">← Назад</button>
-        
-        <div class="detail-header">
-            <div class="slot-date">Сегодня, 18:00</div>
-            <div class="detail-title">Болдеринг для новичков</div>
+    <!-- ===== SCR-02: Подтверждение бронирования ===== -->
+    <div id="screen-booking" class="screen">
+        <button class="back-btn" onclick="showScreen('screen-slots')">← Назад к расписанию</button>
+
+        <div class="detail-card">
+            <div class="detail-title" id="bookingTitle">Болдеринг для новичков</div>
             <div class="detail-row">
-                <span>Длительность</span>
-                <span>1.5 часа</span>
+                <span class="label">📅 Дата</span>
+                <span class="value" id="bookingDate">Сегодня</span>
             </div>
             <div class="detail-row">
-                <span>Инструктор</span>
-                <span>Алексей ⭐ 4.8</span>
+                <span class="label">⏰ Время</span>
+                <span class="value" id="bookingTime">18:00</span>
             </div>
             <div class="detail-row">
-                <span>Свободно мест</span>
-                <span>5 из 8</span>
+                <span class="label">⏱ Длительность</span>
+                <span class="value">1.5 часа</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">👨‍🏫 Инструктор</span>
+                <span class="value">Алексей ⭐ 4.8</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">👥 Свободно мест</span>
+                <span class="value" id="bookingSeats">5 из 8</span>
             </div>
         </div>
 
-        <div class="equipment-options">
-            <h3>Снаряжение</h3>
-            <label class="radio-option selected" onclick="selectEquipment(this)">
-                <input type="radio" name="equipment" checked>
-                <div>
-                    <strong>Со своим снаряжением</strong>
-                    <div style="font-size: 13px; color: #666;">Принесу свои скальники и систему</div>
+        <div class="detail-card equipment-section">
+            <h3>Что выбираешь?</h3>
+            <div class="equipment-cards">
+                <div class="equipment-card" onclick="selectEquipmentCard(this, false)">
+                    <div class="icon">🎒</div>
+                    <div class="title">Со своим</div>
+                    <div class="desc">Принесу скальники и систему</div>
                 </div>
-            </label>
-            <label class="radio-option" onclick="selectEquipment(this)">
-                <input type="radio" name="equipment">
-                <div>
-                    <strong>Нужен прокат</strong>
-                    <div style="font-size: 13px; color: #666;">Страховочная система + скальники</div>
+                <div class="equipment-card" onclick="selectEquipmentCard(this, true)">
+                    <div class="icon">🧗</div>
+                    <div class="title">Нужен прокат</div>
+                    <div class="desc">Выдадите систему и скальники</div>
                 </div>
-            </label>
+            </div>
         </div>
 
-        <button class="btn btn-primary" onclick="bookSlot()">Записаться</button>
+        <button class="btn btn-primary" id="confirmBtn" disabled onclick="confirmBooking()">
+            Выбери снаряжение, чтобы записаться
+        </button>
     </div>
 
-    <!-- Экран 3: Мои записи -->
+    <!-- ===== Мои записи ===== -->
     <div id="screen-bookings" class="screen">
         <h2 style="margin-bottom: 15px; font-size: 18px;">Мои записи</h2>
 
         <div class="slot-card">
-            <div class="slot-date">Сегодня, 18:00</div>
-            <div class="slot-title">Болдеринг для новичков</div>
-            <div class="slot-info">
-                <span>🧗 Со своим снаряжением</span>
+            <div class="slot-top">
+                <div class="slot-time">Сегодня, 18:00</div>
+                <div class="slot-type">Новичок</div>
             </div>
-            <div class="slot-status status-booked">Записан</div>
-            <button class="btn btn-danger" onclick="cancelBooking()">Отменить запись</button>
+            <div class="slot-title">Болдеринг для новичков</div>
+            <div class="slot-bottom">
+                <span style="font-size: 13px; color: #666;">🎒 Со своим снаряжением</span>
+                <span class="booking-status status-active">Активна</span>
+            </div>
+            <button class="btn btn-danger" style="margin-top: 12px;" onclick="cancelBooking()">Отменить запись</button>
         </div>
 
-        <div class="slot-card">
-            <div class="slot-date">Сб, 14:00</div>
-            <div class="slot-title">Трассы с верёвкой (опытные)</div>
-            <div class="slot-info">
-                <span>🧗 Прокат снаряжения</span>
+        <h3 style="margin: 25px 0 10px; font-size: 14px; color: #888; text-transform: uppercase;">Отменённые скалодромом</h3>
+
+        <div class="slot-card cancelled">
+            <div class="slot-top">
+                <div class="slot-time">Пт, 20:00</div>
+                <div class="slot-type">Новичок</div>
             </div>
-            <div class="slot-status status-booked">Записан</div>
-            <button class="btn btn-danger" onclick="cancelBooking()">Отменить запись</button>
+            <div class="slot-title">Болдеринг для новичков</div>
+            <div style="font-size: 13px; color: #e65100; margin: 8px 0;">
+                ⚠️ Причина: профилактика оборудования
+            </div>
+            <span class="booking-status status-cancelled-gym">Отменена скалодромом</span>
         </div>
 
-        <h3 style="margin: 20px 0 10px; font-size: 16px; color: #666;">Прошедшие</h3>
-        
+        <h3 style="margin: 25px 0 10px; font-size: 14px; color: #888; text-transform: uppercase;">Прошедшие</h3>
+
         <div class="slot-card">
-            <div class="slot-date">Пн, 18:00</div>
+            <div class="slot-top">
+                <div class="slot-time">Пн, 18:00</div>
+                <div class="slot-type">Новичок</div>
+            </div>
             <div class="slot-title">Болдеринг для новичков</div>
-            <button class="btn btn-secondary" onclick="showScreen('screen-rating')">⭐ Оценить инструктора</button>
+            <button class="btn btn-secondary" style="margin-top: 10px;" onclick="showScreen('screen-rating')">⭐ Оценить инструктора</button>
         </div>
     </div>
 
-    <!-- Экран 4: Оценка инструктора -->
+    <!-- ===== Оценка инструктора ===== -->
     <div id="screen-rating" class="screen">
         <button class="back-btn" onclick="showScreen('screen-bookings')">← Назад</button>
-        
-        <div class="detail-header" style="text-align: center;">
-            <h2 style="margin-bottom: 10px;">Как прошла тренировка?</h2>
-            <p style="color: #666;">Инструктор: Алексей</p>
-            
+        <div class="detail-card" style="text-align: center;">
+            <h2 style="margin-bottom: 8px;">Как прошла тренировка?</h2>
+            <p style="color: #666; margin-bottom: 16px;">Инструктор: Алексей</p>
             <div class="rating">
                 <span class="star" onclick="setRating(1)">★</span>
                 <span class="star" onclick="setRating(2)">★</span>
@@ -440,33 +593,44 @@
                 <span class="star" onclick="setRating(4)">★</span>
                 <span class="star" onclick="setRating(5)">★</span>
             </div>
-
-            <textarea placeholder="Комментарий (необязательно)" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; min-height: 100px; font-family: inherit; resize: vertical;"></textarea>
-
-            <button class="btn btn-primary" onclick="submitRating()">Отправить оценку</button>
+            <textarea placeholder="Комментарий (необязательно)"></textarea>
+            <button class="btn btn-primary" style="margin-top: 15px;" onclick="submitRating()">Отправить оценку</button>
         </div>
     </div>
 
-    <!-- Экран 5: Уведомления -->
+    <!-- ===== Уведомления ===== -->
     <div id="screen-notifications" class="screen">
         <h2 style="margin-bottom: 15px; font-size: 18px;">Уведомления</h2>
 
         <div class="notification cancel">
             <div class="notification-time">Сегодня, 10:30</div>
-            <strong>Тренировка отменена</strong>
-            <p style="margin-top: 5px; color: #666;">Болдеринг (Пт, 20:00) отменён скалодромом: профилактика оборудования.</p>
+            <strong>⚠️ Тренировка отменена</strong>
+            <p>Болдеринг (Пт, 20:00) отменён скалодромом: профилактика оборудования. Запись на этот слот недоступна.</p>
         </div>
 
         <div class="notification">
             <div class="notification-time">Сегодня, 09:00</div>
-            <strong>Напоминание о тренировке</strong>
-            <p style="margin-top: 5px; color: #666;">Сегодня в 18:00 вас ждёт тренировка "Болдеринг для новичков". Не забудьте удобную одежду!</p>
+            <strong>🔔 Напоминание</strong>
+            <p>Сегодня в 18:00 вас ждёт тренировка "Болдеринг для новичков". Не забудьте удобную одежду!</p>
         </div>
 
         <div class="notification">
             <div class="notification-time">Вчера, 15:20</div>
-            <strong>Запись подтверждена</strong>
-            <p style="margin-top: 5px; color: #666;">Вы записаны на "Трассы с верёвкой" (Сб, 14:00).</p>
+            <strong>✅ Запись подтверждена</strong>
+            <p>Вы записаны на "Трассы с верёвкой" (Сб, 14:00).</p>
+        </div>
+    </div>
+
+    <!-- ===== SCR-03: Bottom Sheet отказа ===== -->
+    <div class="bottom-sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
+    <div class="bottom-sheet" id="bottomSheet" style="display: none;">
+        <div class="sheet-handle"></div>
+        <div class="sheet-icon" id="sheetIcon">😔</div>
+        <div class="sheet-title" id="sheetTitle">Не удалось записаться</div>
+        <div class="sheet-message" id="sheetMessage">К сожалению, что-то пошло не так.</div>
+        <div class="sheet-buttons">
+            <button class="btn btn-primary" onclick="showOtherSlots()">Показать другие слоты</button>
+            <button class="btn btn-secondary" onclick="closeSheet()">Назад</button>
         </div>
     </div>
 
@@ -474,7 +638,7 @@
     <div class="bottom-nav">
         <div class="nav-item active" onclick="showScreen('screen-slots')">
             <div class="nav-icon">📅</div>
-            <div>Тренировки</div>
+            <div>Расписание</div>
         </div>
         <div class="nav-item" onclick="showScreen('screen-bookings')">
             <div class="nav-icon">📋</div>
@@ -487,59 +651,223 @@
     </div>
 
     <script>
-        // Переключение экранов
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            
-            // Обновляем навигацию
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if (screenId === 'screen-slots') {
-                document.querySelectorAll('.nav-item')[0].classList.add('active');
-            } else if (screenId === 'screen-bookings') {
-                document.querySelectorAll('.nav-item')[1].classList.add('active');
-            } else if (screenId === 'screen-notifications') {
-                document.querySelectorAll('.nav-item')[2].classList.add('active');
+        // ===== Демо-данные слотов =====
+        const slots = [
+            { id: 1, time: '18:00', title: 'Болдеринг для новичков', type: 'Новичок', typeClass: '', seats: 5, max: 8, status: 'available' },
+            { id: 2, time: '19:30', title: 'Трассы с верёвкой', type: 'Опытный', typeClass: 'experienced', seats: 12, max: 16, status: 'available' },
+            { id: 3, time: '20:00', title: 'Болдеринг для новичков', type: 'Новичок', typeClass: '', seats: 0, max: 8, status: 'cancelled', cancelReason: 'Профилактика оборудования' },
+            { id: 4, time: '14:00', title: 'Трассы с верёвкой', type: 'Опытный', typeClass: 'experienced', seats: 8, max: 16, status: 'available' },
+            { id: 5, time: '16:00', title: 'Болдеринг для новичков', type: 'Новичок', typeClass: '', seats: 8, max: 8, status: 'full' },
+        ];
+
+        let selectedEquipment = null;
+        let currentSlot = null;
+
+        // ===== Генерация фильтра дат (7 дней) =====
+        function generateDateFilter() {
+            const filter = document.getElementById('dateFilter');
+            const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+            const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+            const today = new Date();
+
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+                const chip = document.createElement('div');
+                chip.className = 'date-chip' + (i === 0 ? ' active' : '');
+                chip.innerHTML = `
+                    <div class="day-name">${i === 0 ? 'Сегодня' : days[d.getDay()]}</div>
+                    <div class="day-num">${d.getDate()}</div>
+                    <div class="month">${months[d.getMonth()]}</div>
+                `;
+                chip.onclick = () => {
+                    document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    simulateReload();
+                };
+                filter.appendChild(chip);
             }
         }
 
-        // Показать детали слота
-        function showSlotDetail(id) {
-            showScreen('screen-detail');
-        }
+        // ===== Рендер слотов =====
+        function renderSlots() {
+            const container = document.getElementById('state-data');
+            container.innerHTML = '';
+            slots.forEach(slot => {
+                const card = document.createElement('div');
+                card.className = 'slot-card' + (slot.status === 'cancelled' ? ' cancelled' : '') + (slot.status === 'full' ? ' full' : '');
 
-        // Выбор снаряжения
-        function selectEquipment(element) {
-            document.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
-            element.classList.add('selected');
-        }
+                const seatsPercent = (slot.seats / slot.max) * 100;
+                let actionBtn = '';
+                if (slot.status === 'available') {
+                    actionBtn = `<button class="slot-action" onclick="openBooking(${slot.id})">Записаться</button>`;
+                } else if (slot.status === 'full') {
+                    actionBtn = `<button class="slot-action disabled">Мест нет</button>`;
+                } else if (slot.status === 'cancelled') {
+                    actionBtn = `<button class="slot-action cancelled-btn">Отменено</button>`;
+                }
 
-        // Записаться
-        function bookSlot() {
-            alert('✅ Запрос на бронирование отправлен!\n(Здесь будет API-запрос к бэкенду)');
-            showScreen('screen-bookings');
-        }
-
-        // Отменить запись
-        function cancelBooking() {
-            if (confirm('Вы уверены, что хотите отменить запись?')) {
-                alert('Запись отменена.\n(Здесь будет API-запрос к бэкенду)');
-                showScreen('screen-bookings');
-            }
-        }
-
-        // Рейтинг
-        function setRating(stars) {
-            document.querySelectorAll('.star').forEach((star, index) => {
-                star.classList.toggle('active', index < stars);
+                card.innerHTML = `
+                    <div class="slot-top">
+                        <div class="slot-time">${slot.time}</div>
+                        <div class="slot-type ${slot.typeClass}">${slot.type}</div>
+                    </div>
+                    <div class="slot-title">${slot.title}</div>
+                    ${slot.status === 'cancelled' ? `<div style="font-size: 12px; color: #e65100; margin-bottom: 8px;">⚠️ ${slot.cancelReason}</div>` : ''}
+                    <div class="slot-bottom">
+                        <div class="slot-seats">
+                            <div class="seats-bar"><div class="seats-fill ${slot.status === 'full' ? 'full' : ''}" style="width: ${seatsPercent}%"></div></div>
+                            <span>${slot.seats}/${slot.max}</span>
+                        </div>
+                        ${actionBtn}
+                    </div>
+                `;
+                container.appendChild(card);
             });
         }
 
-        // Отправить оценку
+        // ===== Имитация загрузки =====
+        function simulateReload() {
+            document.getElementById('state-data').style.display = 'none';
+            document.getElementById('state-loading').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('state-loading').style.display = 'none';
+                document.getElementById('state-data').style.display = 'block';
+                renderSlots();
+            }, 1200);
+        }
+
+        function reloadData() {
+            document.getElementById('state-error').style.display = 'none';
+            simulateReload();
+        }
+
+        function resetDateFilter() {
+            document.querySelectorAll('.date-chip').forEach((c, i) => {
+                c.classList.toggle('active', i === 0);
+            });
+            simulateReload();
+        }
+
+        // ===== SCR-02: Открыть бронирование =====
+        function openBooking(slotId) {
+            currentSlot = slots.find(s => s.id === slotId);
+            if (!currentSlot) return;
+
+            document.getElementById('bookingTitle').textContent = currentSlot.title;
+            document.getElementById('bookingTime').textContent = currentSlot.time;
+            document.getElementById('bookingSeats').textContent = `${currentSlot.seats} из ${currentSlot.max}`;
+
+            selectedEquipment = null;
+            document.querySelectorAll('.equipment-card').forEach(c => c.classList.remove('selected'));
+            const btn = document.getElementById('confirmBtn');
+            btn.disabled = true;
+            btn.textContent = 'Выбери снаряжение, чтобы записаться';
+
+            showScreen('screen-booking');
+        }
+
+        function selectEquipmentCard(el, isRental) {
+            document.querySelectorAll('.equipment-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedEquipment = isRental;
+
+            const btn = document.getElementById('confirmBtn');
+            btn.disabled = false;
+            btn.innerHTML = 'Подтвердить запись';
+        }
+
+        function confirmBooking() {
+            const btn = document.getElementById('confirmBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Отправляем запрос...';
+
+            setTimeout(() => {
+                // Демо: 50% шанс отказа
+                if (Math.random() > 0.5) {
+                    showDenialSheet('no_seats');
+                } else {
+                    alert('✅ Запись подтверждена!');
+                    showScreen('screen-bookings');
+                }
+                btn.disabled = false;
+                btn.innerHTML = 'Подтвердить запись';
+            }, 1500);
+        }
+
+        // ===== SCR-03: Bottom Sheet отказов =====
+        const denialMessages = {
+            no_seats: {
+                icon: '🚫',
+                title: 'Мест больше нет',
+                message: 'К сожалению, пока ты выбирал, последнее место занял другой клиент. Попробуй другой слот — они ещё есть!'
+            },
+            no_rental: {
+                icon: '🎒',
+                title: 'Прокат закончился',
+                message: 'Всё снаряжение на эту тренировку уже разобрали. Можешь прийти со своим или выбрать другое время.'
+            },
+            newbie_limit: {
+                icon: '👶',
+                title: 'Лимит новичков',
+                message: 'На этой тренировке уже максимальное количество новичков. Попробуй слот для опытных или другое время.'
+            },
+            error: {
+                icon: '😕',
+                title: 'Техническая ошибка',
+                message: 'Что-то пошло не так на нашей стороне. Попробуй ещё раз через минуту.'
+            }
+        };
+
+        function showDenialSheet(type) {
+            const data = denialMessages[type] || denialMessages.error;
+            document.getElementById('sheetIcon').textContent = data.icon;
+            document.getElementById('sheetTitle').textContent = data.title;
+            document.getElementById('sheetMessage').textContent = data.message;
+            document.getElementById('bottomSheet').style.display = 'block';
+            document.getElementById('sheetOverlay').classList.add('active');
+        }
+
+        function closeSheet() {
+            document.getElementById('bottomSheet').style.display = 'none';
+            document.getElementById('sheetOverlay').classList.remove('active');
+        }
+
+        function showOtherSlots() {
+            closeSheet();
+            showScreen('screen-slots');
+        }
+
+        // ===== Навигация =====
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const navMap = { 'screen-slots': 0, 'screen-bookings': 1, 'screen-notifications': 2 };
+            if (navMap[screenId] !== undefined) {
+                document.querySelectorAll('.nav-item')[navMap[screenId]].classList.add('active');
+            }
+        }
+
+        function cancelBooking() {
+            if (confirm('Отменить запись?')) {
+                alert('Запись отменена');
+            }
+        }
+
+        function setRating(n) {
+            document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('active', i < n));
+        }
+
         function submitRating() {
-            alert('⭐ Спасибо за оценку!\n(Здесь будет API-запрос к бэкенду)');
+            alert('⭐ Спасибо за оценку!');
             showScreen('screen-bookings');
         }
+
+        // ===== Инициализация =====
+        generateDateFilter();
+        simulateReload();
     </script>
 </body>
 </html>
