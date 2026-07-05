@@ -1,0 +1,143 @@
+{
+  "test_suite": "Оценка инструктора",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "TC-04.1",
+      "title": "Оценка инструктора после завершённой тренировки",
+      "priority": "P0",
+      "type": "positive",
+      "preconditions": {
+        "booking": {
+          "id": 1001,
+          "title": "Трассы с верёвкой",
+          "instructor": "Иван",
+          "status": "active",
+          "start_at": "2026-07-04T18:00:00Z",
+          "rated": false
+        },
+        "current_time": "2026-07-06T14:00:00Z"
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Перейти в 'Мои записи' → вкладка 'Прошедшие'",
+          "expected": "Отображается завершённая тренировка с кнопкой '⭐ Оценить инструктора'"
+        },
+        {
+          "step_number": 2,
+          "action": "Нажать кнопку '⭐ Оценить инструктора'",
+          "expected": "Открывается экран оценки"
+        },
+        {
+          "step_number": 3,
+          "action": "Выбрать 4 звезды",
+          "expected": "Звёзды подсвечиваются жёлтым, кнопка 'Отправить' становится активной"
+        },
+        {
+          "step_number": 4,
+          "action": "Ввести комментарий 'Отличная тренировка!'",
+          "expected": "Текст введён в поле"
+        },
+        {
+          "step_number": 5,
+          "action": "Нажать 'Отправить'",
+          "expected": "Появляется индикатор загрузки"
+        }
+      ],
+      "expected_result": {
+        "rating_submitted": true,
+        "booking_rated": true,
+        "notification_created": {
+          "type": "rating_thanks",
+          "text": "Вы оценили Иван на 4 звезды: \"Отличная тренировка!\""
+        },
+        "ui_updated": {
+          "rating_button_hidden": true,
+          "redirect_to": "screen-bookings"
+        }
+      }
+    },
+    {
+      "id": "TC-04.2",
+      "title": "Попытка оценить без выбора звёзд",
+      "priority": "P1",
+      "type": "negative",
+      "preconditions": {
+        "booking": {
+          "id": 1002,
+          "rated": false
+        }
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Открыть экран оценки",
+          "expected": "Звёзды неактивны, кнопка 'Отправить' неактивна"
+        },
+        {
+          "step_number": 2,
+          "action": "Попытаться нажать 'Отправить'",
+          "expected": "Кнопка не реагирует"
+        }
+      ],
+      "expected_result": {
+        "submit_button_disabled": true,
+        "rating_not_submitted": true
+      }
+    },
+    {
+      "id": "TC-04.3",
+      "title": "Пропуск оценки",
+      "priority": "P1",
+      "type": "positive",
+      "preconditions": {
+        "booking": {
+          "id": 1003,
+          "rated": false
+        }
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Открыть экран оценки",
+          "expected": "Экран открыт"
+        },
+        {
+          "step_number": 2,
+          "action": "Нажать 'Пропустить'",
+          "expected": "Возврат к списку записей"
+        }
+      ],
+      "expected_result": {
+        "rating_not_submitted": true,
+        "booking_rated": false,
+        "redirect_to": "screen-bookings"
+      }
+    },
+    {
+      "id": "TC-04.4",
+      "title": "Повторная оценка невозможна",
+      "priority": "P0",
+      "type": "negative",
+      "preconditions": {
+        "booking": {
+          "id": 1004,
+          "rated": true,
+          "rating": 5
+        }
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Найти тренировку с rated=true",
+          "expected": "Кнопка 'Оценить' отсутствует"
+        }
+      ],
+      "expected_result": {
+        "rating_button_hidden": true,
+        "cannot_rate_again": true
+      }
+    }
+  ]
+}

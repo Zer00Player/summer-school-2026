@@ -1,0 +1,206 @@
+{
+  "test_suite": "Фильтры расписания",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "TC-03.1",
+      "title": "Фильтрация по типу маршрута (новичковый)",
+      "priority": "P0",
+      "type": "positive",
+      "preconditions": {
+        "available_slots": [
+          {"id": 1, "type": "novice", "instructor": "Алексей"},
+          {"id": 2, "type": "experienced", "instructor": "Иван"},
+          {"id": 3, "type": "novice", "instructor": "Мария"},
+          {"id": 4, "type": "experienced", "instructor": "Алексей"}
+        ]
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Нажать кнопку '⚙️' в шапке",
+          "expected": "Открывается модальное окно фильтров"
+        },
+        {
+          "step_number": 2,
+          "action": "Выбрать чип '🟢 Новичковый'",
+          "expected": "Чип подсвечивается зелёным"
+        },
+        {
+          "step_number": 3,
+          "action": "Нажать 'Применить'",
+          "expected": "Модальное окно закрывается, список обновляется"
+        }
+      ],
+      "expected_result": {
+        "filtered_slots": [1, 3],
+        "slots_count": 2,
+        "all_slots_novice": true
+      }
+    },
+    {
+      "id": "TC-03.2",
+      "title": "Фильтрация по инструктору",
+      "priority": "P0",
+      "type": "positive",
+      "preconditions": {
+        "available_slots": [
+          {"id": 1, "instructor": "Алексей"},
+          {"id": 2, "instructor": "Иван"},
+          {"id": 3, "instructor": "Мария"},
+          {"id": 4, "instructor": "Алексей"}
+        ]
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Открыть фильтры",
+          "expected": "Модальное окно открыто"
+        },
+        {
+          "step_number": 2,
+          "action": "Выбрать чип 'Алексей'",
+          "expected": "Чип подсвечивается"
+        },
+        {
+          "step_number": 3,
+          "action": "Нажать 'Применить'",
+          "expected": "Список обновляется"
+        }
+      ],
+      "expected_result": {
+        "filtered_slots": [1, 4],
+        "all_slots_instructor": "Алексей"
+      }
+    },
+    {
+      "id": "TC-03.3",
+      "title": "Комбинированная фильтрация (тип + инструктор)",
+      "priority": "P0",
+      "type": "positive",
+      "preconditions": {
+        "available_slots": [
+          {"id": 1, "type": "novice", "instructor": "Алексей"},
+          {"id": 2, "type": "experienced", "instructor": "Иван"},
+          {"id": 3, "type": "novice", "instructor": "Мария"},
+          {"id": 4, "type": "experienced", "instructor": "Алексей"}
+        ]
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Выбрать '🟢 Новичковый'",
+          "expected": "Чип активен"
+        },
+        {
+          "step_number": 2,
+          "action": "Выбрать 'Алексей'",
+          "expected": "Оба чипа активны"
+        },
+        {
+          "step_number": 3,
+          "action": "Нажать 'Применить'",
+          "expected": "Список обновляется"
+        }
+      ],
+      "expected_result": {
+        "filtered_slots": [1],
+        "logic": "AND между категориями",
+        "result_description": "Только новичковые тренировки Алексея"
+      }
+    },
+    {
+      "id": "TC-03.4",
+      "title": "Множественный выбор в одной категории (OR)",
+      "priority": "P1",
+      "type": "positive",
+      "preconditions": {
+        "available_slots": [
+          {"id": 1, "instructor": "Алексей"},
+          {"id": 2, "instructor": "Иван"},
+          {"id": 3, "instructor": "Мария"}
+        ]
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Выбрать 'Алексей'",
+          "expected": "Чип активен"
+        },
+        {
+          "step_number": 2,
+          "action": "Выбрать 'Иван'",
+          "expected": "Оба чипа активны"
+        },
+        {
+          "step_number": 3,
+          "action": "Применить фильтры",
+          "expected": "Список обновляется"
+        }
+      ],
+      "expected_result": {
+        "filtered_slots": [1, 2],
+        "logic": "OR внутри категории",
+        "result_description": "Тренировки Алексея ИЛИ Ивана"
+      }
+    },
+    {
+      "id": "TC-03.5",
+      "title": "Сброс всех фильтров",
+      "priority": "P1",
+      "type": "positive",
+      "preconditions": {
+        "active_filters": {
+          "types": ["novice"],
+          "instructors": ["Алексей"]
+        }
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Открыть фильтры с активными фильтрами",
+          "expected": "Видны активные чипы"
+        },
+        {
+          "step_number": 2,
+          "action": "Нажать 'Сбросить'",
+          "expected": "Все чипы деактивируются"
+        }
+      ],
+      "expected_result": {
+        "filters_cleared": true,
+        "all_slots_shown": true,
+        "slots_count": "all available"
+      }
+    },
+    {
+      "id": "TC-03.6",
+      "title": "Empty state при фильтрации",
+      "priority": "P1",
+      "type": "negative",
+      "preconditions": {
+        "available_slots": [
+          {"id": 1, "type": "novice", "instructor": "Алексей"}
+        ]
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Выбрать фильтр '🔴 Опытный'",
+          "expected": "Чип активен"
+        },
+        {
+          "step_number": 2,
+          "action": "Применить фильтр",
+          "expected": "Список обновляется"
+        }
+      ],
+      "expected_result": {
+        "filtered_slots": [],
+        "empty_state_shown": true,
+        "empty_state_text": "Нет доступных тренировок",
+        "empty_state_hint": "Попробуй изменить фильтры или выбрать другую дату"
+      }
+    }
+  ]
+}

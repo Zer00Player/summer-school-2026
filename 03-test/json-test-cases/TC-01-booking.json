@@ -1,0 +1,251 @@
+{
+  "test_suite": "Бронирование тренировок",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "TC-01.1",
+      "title": "Успешная запись на тренировку со своим снаряжением",
+      "priority": "P0",
+      "type": "positive",
+      "preconditions": {
+        "user_state": "авторизован",
+        "slot_state": {
+          "id": 105,
+          "time": "18:00",
+          "title": "Вечерний болдеринг",
+          "instructor": "Алексей",
+          "booked": 5,
+          "total": 8,
+          "status": "available"
+        },
+        "bonus_balance": 150
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Открыть приложение",
+          "expected": "Отображается главный экран с расписанием на 7 дней"
+        },
+        {
+          "step_number": 2,
+          "action": "Найти слот 'Вечерний болдеринг' в 18:00",
+          "expected": "Карточка слота отображается с информацией: время 18:00, инструктор Алексей, занято 5/8 мест"
+        },
+        {
+          "step_number": 3,
+          "action": "Нажать кнопку 'Записаться'",
+          "expected": "Открывается экран подтверждения записи"
+        },
+        {
+          "step_number": 4,
+          "action": "Выбрать опцию 'Со своим снаряжением'",
+          "expected": "Карточка 'Со своим' подсвечивается, кнопка 'Подтвердить запись' становится активной"
+        },
+        {
+          "step_number": 5,
+          "action": "Нажать кнопку 'Подтвердить запись'",
+          "expected": "Появляется индикатор загрузки на кнопке"
+        },
+        {
+          "step_number": 6,
+          "action": "Дождаться завершения запроса",
+          "expected": "Открывается модальное окно 'ВЫ ЗАПИСАНЫ!' со сводкой брони"
+        }
+      ],
+      "expected_result": {
+        "modal_shown": true,
+        "modal_content": {
+          "title": "ВЫ ЗАПИСАНЫ!",
+          "date": "Сегодня, 18:00",
+          "route": "Вечерний болдеринг",
+          "instructor": "Алексей",
+          "seats": "1 место · 0 прокатных",
+          "price": "1 200 ₽"
+        },
+        "slot_updated": {
+          "booked": 6,
+          "status": "available"
+        },
+        "booking_created": {
+          "status": "active",
+          "slot_id": 105,
+          "rental_count": 0,
+          "price_total": 1200
+        },
+        "notification_created": {
+          "type": "booking_confirmed",
+          "text": "Вечерний болдеринг, Сегодня в 18:00"
+        }
+      },
+      "cleanup": {
+        "cancel_booking": true,
+        "restore_slot": true
+      }
+    },
+    {
+      "id": "TC-01.2",
+      "title": "Успешная запись с прокатом снаряжения",
+      "priority": "P0",
+      "type": "positive",
+      "preconditions": {
+        "user_state": "авторизован",
+        "slot_state": {
+          "id": 106,
+          "time": "19:30",
+          "title": "Трассы с верёвкой",
+          "instructor": "Иван",
+          "booked": 8,
+          "total": 12,
+          "status": "available",
+          "free_rental_boards": 5
+        }
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Выбрать слот 'Трассы с верёвкой' в 19:30",
+          "expected": "Карточка слота отображается"
+        },
+        {
+          "step_number": 2,
+          "action": "Нажать 'Записаться'",
+          "expected": "Открывается экран подтверждения"
+        },
+        {
+          "step_number": 3,
+          "action": "Выбрать 'Нужен прокат'",
+          "expected": "Карточка 'Нужен прокат' подсвечивается"
+        },
+        {
+          "step_number": 4,
+          "action": "Нажать 'Подтвердить запись'",
+          "expected": "Запрос отправляется"
+        }
+      ],
+      "expected_result": {
+        "booking_created": {
+          "status": "active",
+          "rental_count": 1,
+          "price_total": 1800
+        },
+        "slot_updated": {
+          "booked": 9,
+          "free_rental_boards": 4
+        },
+        "success_modal": {
+          "price": "1 800 ₽",
+          "seats": "1 место · 1 прокатная"
+        }
+      }
+    },
+    {
+      "id": "TC-01.3",
+      "title": "Запись с использованием бонусов",
+      "priority": "P1",
+      "type": "positive",
+      "preconditions": {
+        "user_state": "авторизован",
+        "bonus_balance": 150,
+        "slot_state": {
+          "id": 107,
+          "price": 1200,
+          "rental_price": 600
+        }
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Выбрать слот и снаряжение",
+          "expected": "Экран подтверждения открыт"
+        },
+        {
+          "step_number": 2,
+          "action": "Включить чекбокс 'Оплатить бонусами'",
+          "expected": "Появляется разбивка цены: обычная 1 200 ₽, с бонусами 600 ₽"
+        },
+        {
+          "step_number": 3,
+          "action": "Подтвердить запись",
+          "expected": "Запись создана"
+        }
+      ],
+      "expected_result": {
+        "booking_created": {
+          "price_total": 600
+        },
+        "bonus_balance_updated": {
+          "before": 150,
+          "used": 50,
+          "earned": 3,
+          "after": 103
+        },
+        "success_modal": {
+          "bonus_earned": 3
+        }
+      }
+    },
+    {
+      "id": "TC-01.4",
+      "title": "Попытка записаться на полностью заполненный слот",
+      "priority": "P0",
+      "type": "negative",
+      "preconditions": {
+        "slot_state": {
+          "id": 108,
+          "booked": 8,
+          "total": 8,
+          "status": "full"
+        }
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Найти слот с статусом 'full' (8/8)",
+          "expected": "Карточка слота полупрозрачная, серый бордер"
+        },
+        {
+          "step_number": 2,
+          "action": "Проверить кнопку действия",
+          "expected": "Кнопка 'Мест нет' неактивна"
+        }
+      ],
+      "expected_result": {
+        "button_disabled": true,
+        "button_text": "Мест нет",
+        "booking_not_created": true
+      }
+    },
+    {
+      "id": "TC-01.5",
+      "title": "Попытка повторной записи на тот же слот (BUG-002)",
+      "priority": "P0",
+      "type": "negative",
+      "related_bug": "BUG-002",
+      "preconditions": {
+        "user_state": "авторизован",
+        "existing_booking": {
+          "slot_id": 105,
+          "status": "active"
+        }
+      },
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "Найти слот, на который уже есть активная бронь",
+          "expected": "Кнопка показывает '✓ Записан' (зелёная)"
+        },
+        {
+          "step_number": 2,
+          "action": "Попытаться нажать на кнопку",
+          "expected": "Кнопка не реагирует или показывает сообщение"
+        }
+      ],
+      "expected_result": {
+        "button_text": "✓ Записан",
+        "button_style": "already-booked",
+        "booking_not_duplicated": true,
+        "alert_shown": false
+      }
+    }
+  ]
+}
