@@ -21,13 +21,27 @@
             background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
             color: white;
             padding: 20px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             position: sticky;
             top: 0;
             z-index: 50;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+        .btn-filters {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
         .screen { display: none; padding: 15px; animation: fadeIn 0.3s; }
         .screen.active { display: block; }
@@ -53,11 +67,7 @@
             min-width: 64px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .date-chip.active {
-            background: #2c3e50;
-            color: white;
-            border-color: #4ca1af;
-        }
+        .date-chip.active { background: #2c3e50; color: white; border-color: #4ca1af; }
         .date-chip .day-name { font-size: 11px; text-transform: uppercase; opacity: 0.7; }
         .date-chip .day-num { font-size: 18px; font-weight: 700; margin-top: 2px; }
 
@@ -72,12 +82,7 @@
         }
         .slot-card:active { transform: scale(0.99); }
         .slot-card.cancelled { border-left-color: #ff9800; background: #fff8e1; opacity: 0.7; }
-        .slot-card.full { 
-            border-left-color: #9e9e9e; 
-            background: #f5f5f5; 
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .slot-card.full { border-left-color: #9e9e9e; background: #f5f5f5; opacity: 0.5; cursor: not-allowed; }
 
         .slot-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .slot-time { font-size: 20px; font-weight: 700; }
@@ -100,14 +105,8 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
         }
-        .btn-book:active { transform: scale(0.95); }
-        .btn-book.disabled { 
-            background: #e0e0e0; 
-            color: #9e9e9e; 
-            cursor: not-allowed;
-        }
+        .btn-book.disabled { background: #e0e0e0; color: #9e9e9e; cursor: not-allowed; }
 
         .back-btn {
             background: none; border: none; color: #4ca1af; font-size: 16px; cursor: pointer;
@@ -131,7 +130,6 @@
         .equipment-card.selected { border-color: #4ca1af; background: #e0f2f1; }
         .equipment-card .icon { font-size: 36px; margin-bottom: 8px; }
         .equipment-card .title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-        .equipment-card .desc { font-size: 11px; color: #666; }
 
         .btn {
             width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 16px;
@@ -146,71 +144,63 @@
         .btn .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .tabs {
-            display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .tab {
-            flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 600;
-            color: #666; cursor: pointer; border-radius: 8px; transition: all 0.2s;
-        }
+        .tabs { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 600; color: #666; cursor: pointer; border-radius: 8px; }
         .tab.active { background: #2c3e50; color: white; }
-
-        .booking-card {
-            background: white; border-radius: 14px; padding: 16px; margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer;
-        }
-        .status-badge {
-            display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-top: 8px;
-        }
+        .booking-card { background: white; border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-top: 8px; }
         .status-active { background: #e8f5e9; color: #2e7d32; }
-        .status-late-cancel { background: #fff3e0; color: #e65100; }
         .status-cancelled { background: #ffebee; color: #c62828; }
         .status-cancelled-gym { background: #fff3e0; color: #e65100; }
         .status-past { background: #f5f5f5; color: #757575; }
-
-        .alert-block {
-            background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px; border-radius: 8px;
-            margin-top: 15px; font-size: 13px; color: #e65100; line-height: 1.4;
-        }
-
-        .notif-group-header { font-size: 13px; font-weight: 700; color: #888; text-transform: uppercase; margin: 15px 0 8px; }
-        .notif-card {
-            background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; gap: 12px; cursor: pointer;
-        }
-        .notif-card.unread { background: #f0f7ff; font-weight: 600; }
-        .notif-icon { font-size: 24px; flex-shrink: 0; }
-        .notif-content { flex: 1; }
-        .notif-title { font-size: 14px; margin-bottom: 4px; }
-        .notif-text { font-size: 13px; color: #666; font-weight: 400; line-height: 1.4; }
-        .notif-time { font-size: 11px; color: #999; margin-top: 4px; font-weight: 400; }
-        .unread-dot { width: 8px; height: 8px; background: #4ca1af; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
-
-        .rating { display: flex; justify-content: center; gap: 12px; margin: 20px 0; }
-        .star { font-size: 40px; cursor: pointer; color: #ddd; transition: all 0.2s; }
-        .star.active { color: #ffc107; transform: scale(1.1); }
-        textarea {
-            width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px;
-            min-height: 100px; font-family: inherit; resize: vertical; font-size: 14px;
-        }
 
         .overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);
             z-index: 200; display: none; animation: fadeIn 0.2s;
         }
         .overlay.active { display: block; }
+        
         .sheet {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
             background: white; border-radius: 24px 24px 0 0; padding: 20px; z-index: 201;
-            animation: slideUp 0.3s;
+            animation: slideUp 0.3s; max-height: 85vh; overflow-y: auto;
         }
         @keyframes slideUp { from { transform: translate(-50%, 100%); } to { transform: translate(-50%, 0); } }
         .sheet-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 20px; }
-        .sheet-icon { font-size: 48px; text-align: center; margin-bottom: 12px; }
-        .sheet-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; }
-        .sheet-message { font-size: 14px; color: #666; text-align: center; margin-bottom: 20px; line-height: 1.5; }
-        .sheet-buttons { display: flex; flex-direction: column; gap: 10px; }
+        
+        .modal-center {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px;
+            background: white; border-radius: 20px; padding: 30px 20px; z-index: 201; text-align: center;
+            animation: popIn 0.3s;
+        }
+        @keyframes popIn { from { opacity: 0; transform: translate(-50%, -40%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+
+        .success-icon { font-size: 64px; margin-bottom: 10px; }
+        .success-title { font-size: 24px; font-weight: 800; color: #2c3e50; margin-bottom: 20px; letter-spacing: 1px; }
+        .success-summary { text-align: left; background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px; font-size: 14px; }
+        .success-summary .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .success-summary .row:last-child { margin-bottom: 0; font-weight: 700; color: #2c3e50; font-size: 16px; border-top: 1px dashed #ddd; padding-top: 8px;}
+        .success-reminder { background: #fff3e0; padding: 12px; border-radius: 10px; font-size: 13px; color: #e65100; margin-bottom: 20px; text-align: left; }
+
+        .filter-section { margin-bottom: 20px; }
+        .filter-section h3 { font-size: 14px; color: #666; margin-bottom: 10px; text-transform: uppercase; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            padding: 8px 14px; background: #f0f0f0; border-radius: 20px; font-size: 13px; cursor: pointer;
+            border: 2px solid transparent; transition: all 0.2s;
+        }
+        .chip.active { background: #e0f2f1; border-color: #4ca1af; color: #00695c; font-weight: 600; }
+        .checkbox-row { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
+        .checkbox-row input { width: 20px; height: 20px; accent-color: #4ca1af; }
+
+        .mock-map {
+            width: 100%; height: 200px; background: #e8f4f8; border-radius: 12px; margin-bottom: 15px;
+            position: relative; overflow: hidden; border: 1px solid #d0e3ea;
+        }
+        .mock-map svg { width: 100%; height: 100%; }
+        .map-info { font-size: 14px; color: #333; margin-bottom: 15px; }
+        .map-info strong { display: block; font-size: 16px; margin-bottom: 4px; }
+        .map-info span { color: #666; }
 
         .bottom-nav {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
@@ -224,7 +214,10 @@
 </head>
 <body>
 
-    <div class="header"><h1>🧗 Скалодром</h1></div>
+    <div class="header">
+        <h1>🧗 Скалодром</h1>
+        <button class="btn-filters" onclick="openSheet('filtersSheet')">⚙️ Фильтры</button>
+    </div>
 
     <div id="screen-slots" class="screen active">
         <div class="date-filter" id="dateFilter"></div>
@@ -237,17 +230,20 @@
             <div class="detail-title" id="bookingTitle">Болдеринг</div>
             <div class="detail-row"><span class="label">⏰ Время</span><span class="value" id="bookingTime">18:00</span></div>
             <div class="detail-row"><span class="label">⏱ Длительность</span><span class="value">1.5 часа</span></div>
-            <div class="detail-row"><span class="label">👨‍🏫 Инструктор</span><span class="value">Алексей ⭐ 4.8</span></div>
+            <div class="detail-row"><span class="label">👨‍🏫 Инструктор</span><span class="value" id="bookingInstructor">Алексей</span></div>
             <div class="detail-row"><span class="label">👥 Занято</span><span class="value" id="bookingSeats">5 из 8</span></div>
         </div>
+        
+        <button class="btn btn-secondary" style="margin-bottom: 15px;" onclick="openSheet('mapSheet')">🗺️ Посмотреть маршрут и место встречи</button>
+
         <div class="detail-card">
             <h3 style="margin-bottom: 12px;">Снаряжение</h3>
             <div class="equipment-cards">
-                <div class="equipment-card" onclick="selectEquip(this, false)">
+                <div class="equipment-card" onclick="selectEquip(this, 0)">
                     <div class="icon">🎒</div>
                     <div class="title">Со своим</div>
                 </div>
-                <div class="equipment-card" onclick="selectEquip(this, true)">
+                <div class="equipment-card" onclick="selectEquip(this, 1)">
                     <div class="icon">🧗</div>
                     <div class="title">Нужен прокат</div>
                 </div>
@@ -257,66 +253,117 @@
     </div>
 
     <div id="screen-bookings" class="screen">
-        <div class="tabs" id="historyTabs">
+        <div class="tabs">
             <div class="tab active" onclick="filterBookings('all', this)">Все</div>
             <div class="tab" onclick="filterBookings('active', this)">Активные</div>
             <div class="tab" onclick="filterBookings('past', this)">Прошедшие</div>
-            <div class="tab" onclick="filterBookings('cancelled', this)">Отмененные</div>
         </div>
         <div id="bookingsList"></div>
     </div>
 
-    <div id="screen-details" class="screen">
-        <button class="back-btn" onclick="showScreen('screen-bookings')">← К списку</button>
-        <div id="detailsContent"></div>
-    </div>
-
-    <div id="screen-rating" class="screen">
-        <button class="back-btn" onclick="showScreen('screen-bookings')">← Назад</button>
-        <div class="detail-card" style="text-align: center;">
-            <h2>Как прошла тренировка?</h2>
-            <p style="color: #666; margin: 8px 0 16px;">Инструктор: Алексей</p>
-            <div class="rating">
-                <span class="star" onclick="setRating(1)">★</span>
-                <span class="star" onclick="setRating(2)">★</span>
-                <span class="star" onclick="setRating(3)">★</span>
-                <span class="star" onclick="setRating(4)">★</span>
-                <span class="star" onclick="setRating(5)">★</span>
-            </div>
-            <textarea placeholder="Комментарий (необязательно)"></textarea>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn btn-secondary" onclick="showScreen('screen-bookings')">Пропустить</button>
-                <button class="btn btn-primary" id="submitRatingBtn" disabled onclick="submitRating()">Отправить</button>
-            </div>
-        </div>
-    </div>
-
     <div id="screen-notifications" class="screen">
         <h2 style="margin-bottom: 15px; font-size: 18px;">Уведомления</h2>
-        <div id="notificationsList"></div>
-    </div>
-
-    <div class="overlay" id="overlay" onclick="closeSheets()"></div>
-    
-    <div class="sheet" id="denialSheet" style="display: none;">
-        <div class="sheet-handle"></div>
-        <div class="sheet-icon" id="denialIcon">🚫</div>
-        <div class="sheet-title" id="denialTitle">Не удалось записаться</div>
-        <div class="sheet-message" id="denialMessage">Мест больше нет.</div>
-        <div class="sheet-buttons">
-            <button class="btn btn-primary" onclick="closeSheets(); showScreen('screen-slots')">Показать другие слоты</button>
-            <button class="btn btn-secondary" onclick="closeSheets()">Назад</button>
+        <div class="detail-card">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <span style="font-size: 24px;">⚠️</span>
+                <div><strong>Тренировка отменена</strong><div style="font-size: 13px; color: #666;">Болдеринг (Пт) отменён: профилактика.</div></div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <span style="font-size: 24px;">🔔</span>
+                <div><strong>Напоминание</strong><div style="font-size: 13px; color: #666;">Сегодня в 19:00 вас ждёт тренировка.</div></div>
+            </div>
         </div>
     </div>
 
-    <div class="sheet" id="cancelSheet" style="display: none;">
+    <div class="overlay" id="overlay" onclick="closeAllSheets()"></div>
+
+    <div class="sheet" id="filtersSheet" style="display: none;">
         <div class="sheet-handle"></div>
-        <div class="sheet-icon">⚠️</div>
-        <div class="sheet-title">Отменить запись?</div>
-        <div class="sheet-message" id="cancelMessage">Место освободится, и другой клиент сможет записаться.</div>
-        <div class="sheet-buttons">
-            <button class="btn btn-danger" onclick="executeCancel()">Да, отменить</button>
-            <button class="btn btn-secondary" onclick="closeSheets()">Оставить запись</button>
+        <h2 style="margin-bottom: 20px;">Фильтры расписания</h2>
+        
+        <div class="filter-section">
+            <h3>Дата</h3>
+            <div class="chips" id="dateChips">
+                <div class="chip active" data-filter="today" onclick="toggleDateFilter(this)">Сегодня</div>
+                <div class="chip" data-filter="week" onclick="toggleDateFilter(this)">Эта неделя</div>
+                <div class="chip" data-filter="weekend" onclick="toggleDateFilter(this)">Выходные</div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Тип маршрута</h3>
+            <div class="chips" id="typeChips">
+                <div class="chip" data-type="novice" onclick="toggleTypeFilter(this)">🟢 Новичковый</div>
+                <div class="chip" data-type="experienced" onclick="toggleTypeFilter(this)">🔴 Опытный</div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Инструктор</h3>
+            <div class="chips" id="instructorChips">
+                <div class="chip" data-instructor="Алексей" onclick="toggleInstructorFilter(this)">Алексей</div>
+                <div class="chip" data-instructor="Иван" onclick="toggleInstructorFilter(this)">Иван</div>
+                <div class="chip" data-instructor="Мария" onclick="toggleInstructorFilter(this)">Мария</div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <label class="checkbox-row">
+                <input type="checkbox" id="onlyAvailable" onchange="applyFilters()">
+                Только со свободными местами
+            </label>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="resetFilters()">Сбросить</button>
+            <button class="btn btn-primary" onclick="applyFilters()">Применить</button>
+        </div>
+    </div>
+
+    <div class="sheet" id="mapSheet" style="display: none;">
+        <div class="sheet-handle"></div>
+        <h2 style="margin-bottom: 15px;">Карта маршрута</h2>
+        
+        <div class="mock-map">
+            <svg viewBox="0 0 400 200">
+                <path d="M0 50 L400 50 M0 100 L400 100 M0 150 L400 150 M100 0 L100 200 M200 0 L200 200 M300 0 L300 200" stroke="#d0e3ea" stroke-width="1" fill="none"/>
+                <path d="M 30 170 Q 120 80, 220 120 T 360 40" fill="none" stroke="#4ca1af" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="360" cy="40" r="12" fill="#e74c3c" opacity="0.3"/>
+                <circle cx="360" cy="40" r="6" fill="#e74c3c"/>
+            </svg>
+        </div>
+
+        <div class="map-info">
+            <strong>Городская набережная · Новичковый</strong>
+            <span>⏱ ~90 мин</span><br>
+            <span>📍 Место встречи: Главный вход в парк, у фонтана</span>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" onclick="window.open('https://yandex.ru/maps/', '_blank')">📍 Открыть в Картах</button>
+            <button class="btn btn-primary" onclick="window.open('https://yandex.ru/maps/', '_blank')">🚗 Проложить</button>
+        </div>
+    </div>
+
+    <div class="modal-center" id="successModal" style="display: none;">
+        <div class="success-icon">✅</div>
+        <div class="success-title">ВЫ ЗАПИСАНЫ!</div>
+        
+        <div class="success-summary">
+            <div class="row"><span>Дата и время</span><span id="sumDate">Сегодня, 18:00</span></div>
+            <div class="row"><span>Маршрут</span><span id="sumRoute">Болдеринг · Новичковый</span></div>
+            <div class="row"><span>Инструктор</span><span id="sumInstructor">Алексей</span></div>
+            <div class="row"><span>Места и доски</span><span id="sumSeats">1 место · 0 прокатных</span></div>
+            <div class="row"><span>Итого к оплате</span><span id="sumPrice">1 200 ₽</span></div>
+        </div>
+
+        <div class="success-reminder">
+            💳 <strong>Оплата на месте:</strong> наличные или перевод на карту.
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="btn btn-primary" onclick="closeAllSheets(); showScreen('screen-bookings')">Мои записи</button>
+            <button class="btn btn-secondary" onclick="closeAllSheets(); showScreen('screen-slots')">Готово</button>
         </div>
     </div>
 
@@ -327,93 +374,116 @@
     </div>
 
     <script>
-        // ===== ПРОВЕРКА: ПРОШЛО ЛИ ВРЕМЯ СЛОТА =====
+        // ===== ФИЛЬТРЫ =====
+        const filters = {
+            date: 'today',
+            types: [],
+            instructors: [],
+            onlyAvailable: false
+        };
+
+        function toggleDateFilter(el) {
+            document.querySelectorAll('#dateChips .chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            filters.date = el.dataset.filter;
+        }
+
+        function toggleTypeFilter(el) {
+            el.classList.toggle('active');
+            const type = el.dataset.type;
+            if (el.classList.contains('active')) {
+                filters.types.push(type);
+            } else {
+                filters.types = filters.types.filter(t => t !== type);
+            }
+        }
+
+        function toggleInstructorFilter(el) {
+            el.classList.toggle('active');
+            const instructor = el.dataset.instructor;
+            if (el.classList.contains('active')) {
+                filters.instructors.push(instructor);
+            } else {
+                filters.instructors = filters.instructors.filter(i => i !== instructor);
+            }
+        }
+
+        function resetFilters() {
+            filters.date = 'today';
+            filters.types = [];
+            filters.instructors = [];
+            filters.onlyAvailable = false;
+            
+            document.querySelectorAll('#dateChips .chip').forEach((c, i) => {
+                c.classList.toggle('active', i === 0);
+            });
+            document.querySelectorAll('#typeChips .chip, #instructorChips .chip').forEach(c => {
+                c.classList.remove('active');
+            });
+            document.getElementById('onlyAvailable').checked = false;
+            
+            applyFilters();
+        }
+
+        function applyFilters() {
+            filters.onlyAvailable = document.getElementById('onlyAvailable').checked;
+            renderSlots();
+            closeAllSheets();
+        }
+
+        // ===== ДАННЫЕ =====
+        const instructors = ['Алексей', 'Иван', 'Мария'];
+
         function isSlotPassed(slotTime) {
-            if (selectedDateIndex > 0) return false; // только для сегодняшнего дня
-            
+            if (selectedDateIndex > 0) return false;
             const now = new Date();
-            const [hours, minutes] = slotTime.split(':').map(Number);
-            const slotDate = new Date();
-            slotDate.setHours(hours, minutes, 0, 0);
-            
+            const [h, m] = slotTime.split(':').map(Number);
+            const slotDate = new Date(); slotDate.setHours(h, m, 0, 0);
             return now > slotDate;
         }
 
-        // ===== ГЕНЕРАЦИЯ ДАННЫХ =====
         function generateSlotsForDate(dateOffset) {
             const baseSlots = [
-                { time: '10:00', title: 'Утренний болдеринг', type: 'Новичок', typeClass: '', total: 8 },
-                { time: '12:00', title: 'Трассы с верёвкой', type: 'Опытный', typeClass: 'experienced', total: 12 },
-                { time: '14:00', title: 'Болдеринг для новичков', type: 'Новичок', typeClass: '', total: 8 },
-                { time: '16:00', title: 'Продвинутый болдеринг', type: 'Опытный', typeClass: 'experienced', total: 12 },
-                { time: '18:00', title: 'Вечерний болдеринг', type: 'Новичок', typeClass: '', total: 8 },
-                { time: '19:30', title: 'Трассы с верёвкой', type: 'Опытный', typeClass: 'experienced', total: 12 },
-                { time: '20:00', title: 'Ночной болдеринг', type: 'Новичок', typeClass: '', total: 8 }
+                { time: '10:00', title: 'Утренний болдеринг', type: 'novice', typeLabel: 'Новичок', typeClass: '', total: 8 },
+                { time: '12:00', title: 'Трассы с верёвкой', type: 'experienced', typeLabel: 'Опытный', typeClass: 'experienced', total: 12 },
+                { time: '14:00', title: 'Болдеринг для новичков', type: 'novice', typeLabel: 'Новичок', typeClass: '', total: 8 },
+                { time: '18:00', title: 'Вечерний болдеринг', type: 'novice', typeLabel: 'Новичок', typeClass: '', total: 8 },
+                { time: '19:30', title: 'Трассы с верёвкой', type: 'experienced', typeLabel: 'Опытный', typeClass: 'experienced', total: 12 },
+                { time: '20:00', title: 'Ночной болдеринг', type: 'novice', typeLabel: 'Новичок', typeClass: '', total: 8 }
             ];
-
             const seed = dateOffset * 7 + 13;
-            const slots = [];
-            
-            baseSlots.forEach((slot, idx) => {
+            return baseSlots.map((slot, idx) => {
                 const isCancelled = (seed + idx) % 11 === 0;
                 const fillPercent = ((seed + idx * 3) % 100);
-                let booked;
+                let booked = isCancelled ? 0 : (fillPercent < 15 ? slot.total : Math.floor((100 - fillPercent) / 100 * slot.total));
+                const instructor = instructors[(seed + idx) % instructors.length];
                 
-                if (isCancelled) {
-                    booked = 0;
-                } else if (fillPercent < 15) {
-                    booked = slot.total; // полностью заполнен
-                } else if (fillPercent < 30) {
-                    booked = slot.total - Math.floor(Math.random() * 2) - 1; // почти заполнен
-                } else {
-                    booked = Math.floor((100 - fillPercent) / 100 * slot.total);
-                }
-                
-                slots.push({
+                return {
                     id: dateOffset * 100 + idx,
                     time: slot.time,
                     title: slot.title,
                     type: slot.type,
+                    typeLabel: slot.typeLabel,
                     typeClass: slot.typeClass,
                     total: slot.total,
-                    booked: booked, // занято
+                    booked: booked,
+                    instructor: instructor,
+                    dateOffset: dateOffset,
                     status: isCancelled ? 'cancelled' : (booked === slot.total ? 'full' : 'available'),
                     cancelReason: isCancelled ? 'Профилактика оборудования' : null
-                });
+                };
             });
-            
-            return slots;
         }
 
-        const allSlots = [];
-        for (let i = 0; i < 7; i++) {
-            allSlots[i] = generateSlotsForDate(i);
-        }
-
-        const bookings = [
-            { id: 101, title: 'Болдеринг', time: 'Сегодня, 19:00', hoursLeft: 1, status: 'active', equip: 'Прокат', instructor: 'Алексей' },
-            { id: 102, title: 'Трассы с верёвкой', time: 'Завтра, 18:00', hoursLeft: 24, status: 'active', equip: 'Свое', instructor: 'Иван' },
-            { id: 103, title: 'Болдеринг', time: 'Пт, 20:00', hoursLeft: 0, status: 'cancelled-gym', reason: 'Закрытие зоны', equip: 'Свое' },
-            { id: 104, title: 'Трассы с верёвкой', time: 'Пн, 18:00', hoursLeft: -24, status: 'past', equip: 'Прокат', instructor: 'Алексей' }
-        ];
-
-        const notifications = [
-            { id: 1, group: 'Сегодня', icon: '⚠️', title: 'Тренировка отменена', text: 'Болдеринг (Пт, 20:00) отменён: профилактика.', time: '10:30', unread: true, type: 'cancel' },
-            { id: 2, group: 'Сегодня', icon: '🔔', title: 'Напоминание', text: 'Сегодня в 19:00 вас ждёт тренировка. Не забудьте форму!', time: '09:00', unread: true, type: 'reminder' },
-            { id: 3, group: 'Вчера', icon: '✅', title: 'Запись подтверждена', text: 'Вы записаны на "Трассы с верёвкой" (Завтра, 18:00).', time: '15:20', unread: false, type: 'info' }
-        ];
-
+        const allSlots = Array.from({length: 7}, (_, i) => generateSlotsForDate(i));
         let selectedEquip = null;
         let currentSlot = null;
-        let currentBookingId = null;
-        let currentRating = 0;
         let selectedDateIndex = 0;
 
         function init() {
             renderDates();
             renderSlots();
-            renderBookings('all');
-            renderNotifications();
+            renderBookings();
         }
 
         function renderDates() {
@@ -437,30 +507,50 @@
 
         function renderSlots() {
             const list = document.getElementById('slotsList');
+            let slots = allSlots[selectedDateIndex];
+            
+            // Применяем фильтры
+            if (filters.onlyAvailable) {
+                slots = slots.filter(s => s.status === 'available');
+            }
+            if (filters.types.length > 0) {
+                slots = slots.filter(s => filters.types.includes(s.type));
+            }
+            if (filters.instructors.length > 0) {
+                slots = slots.filter(s => filters.instructors.includes(s.instructor));
+            }
+            
             // Фильтруем прошедшие слоты для сегодняшнего дня
-            const slots = allSlots[selectedDateIndex].filter(s => !isSlotPassed(s.time));
+            slots = slots.filter(s => !isSlotPassed(s.time));
+            
+            if (slots.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: #888;">
+                        <div style="font-size: 64px; margin-bottom: 16px;">📅</div>
+                        <h3 style="color: #333; margin-bottom: 8px; font-size: 18px;">Нет доступных тренировок</h3>
+                        <p style="font-size: 14px;">Попробуй изменить фильтры или выбрать другую дату</p>
+                    </div>
+                `;
+                return;
+            }
             
             list.innerHTML = slots.map(s => {
                 const isFull = s.status === 'full';
                 const isCancelled = s.status === 'cancelled';
                 const seatsPercent = (s.booked / s.total) * 100;
                 
-                let actionBtn = '';
-                if (isCancelled) {
-                    actionBtn = `<button class="btn-book disabled">Отменено</button>`;
-                } else if (isFull) {
-                    actionBtn = `<button class="btn-book disabled">Мест нет</button>`;
-                } else {
-                    actionBtn = `<button class="btn-book" onclick="openBooking(${s.id})">Записаться</button>`;
-                }
+                let actionBtn = isCancelled ? `<button class="btn-book disabled">Отменено</button>` :
+                                isFull ? `<button class="btn-book disabled">Мест нет</button>` :
+                                `<button class="btn-book" onclick="openBooking(${s.id})">Записаться</button>`;
                 
                 return `
                     <div class="slot-card ${isCancelled ? 'cancelled' : ''} ${isFull ? 'full' : ''}">
                         <div class="slot-top">
                             <div class="slot-time">${s.time}</div>
-                            <div class="slot-type ${s.typeClass}">${s.type}</div>
+                            <div class="slot-type ${s.typeClass}">${s.typeLabel}</div>
                         </div>
                         <div class="slot-title">${s.title}</div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 8px;">👨‍🏫 ${s.instructor}</div>
                         ${isCancelled ? `<div style="font-size: 12px; color: #e65100; margin-bottom: 8px;">⚠️ ${s.cancelReason}</div>` : ''}
                         <div class="slot-bottom">
                             <div class="slot-seats">
@@ -475,13 +565,13 @@
         }
 
         function openBooking(id) {
-            const slot = allSlots[selectedDateIndex].find(s => s.id === id);
-            if (!slot || slot.status !== 'available') return;
+            currentSlot = allSlots[selectedDateIndex].find(s => s.id === id);
+            if (!currentSlot || currentSlot.status !== 'available') return;
             
-            currentSlot = slot;
-            document.getElementById('bookingTitle').textContent = slot.title;
-            document.getElementById('bookingTime').textContent = slot.time;
-            document.getElementById('bookingSeats').textContent = `${slot.booked} из ${slot.total}`;
+            document.getElementById('bookingTitle').textContent = currentSlot.title;
+            document.getElementById('bookingTime').textContent = currentSlot.time;
+            document.getElementById('bookingInstructor').textContent = currentSlot.instructor;
+            document.getElementById('bookingSeats').textContent = `${currentSlot.booked} из ${currentSlot.total}`;
             
             selectedEquip = null;
             document.querySelectorAll('.equipment-card').forEach(c => c.classList.remove('selected'));
@@ -490,10 +580,10 @@
             showScreen('screen-booking');
         }
 
-        function selectEquip(el, isRental) {
+        function selectEquip(el, rentalCount) {
             document.querySelectorAll('.equipment-card').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
-            selectedEquip = isRental;
+            selectedEquip = rentalCount;
             const btn = document.getElementById('confirmBtn');
             btn.disabled = false; btn.textContent = 'Подтвердить запись';
         }
@@ -503,166 +593,52 @@
             btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Отправляем...';
             
             setTimeout(() => {
-                const freeSeats = currentSlot.total - currentSlot.booked;
-                if (freeSeats <= 2 && Math.random() > 0.7) {
-                    showDenial('🚫', 'Мест больше нет', 'Пока ты выбирал снаряжение, последнее место занял другой клиент. Попробуй другой слот!');
-                } else if (selectedEquip && freeSeats <= 1 && Math.random() > 0.8) {
-                    showDenial('🎒', 'Прокат закончился', 'Всё снаряжение на эту тренировку уже разобрали. Можешь прийти со своим или выбрать другое время.');
-                } else {
-                    currentSlot.booked = Math.min(currentSlot.total, currentSlot.booked + 1);
-                    if (currentSlot.booked === currentSlot.total) {
-                        currentSlot.status = 'full';
-                    }
-                    renderSlots();
-                    alert('✅ Запись подтверждена!');
-                    showScreen('screen-bookings');
-                }
+                currentSlot.booked = Math.min(currentSlot.total, currentSlot.booked + 1);
+                if (currentSlot.booked === currentSlot.total) currentSlot.status = 'full';
+                
+                document.getElementById('sumDate').textContent = `Сегодня, ${currentSlot.time}`;
+                document.getElementById('sumRoute').textContent = `${currentSlot.title} · ${currentSlot.typeLabel}`;
+                document.getElementById('sumInstructor').textContent = currentSlot.instructor;
+                document.getElementById('sumSeats').textContent = `1 место · ${selectedEquip} прокатная`;
+                document.getElementById('sumPrice').textContent = selectedEquip > 0 ? '1 800 ₽' : '1 200 ₽';
+                
+                renderSlots();
                 btn.disabled = false; btn.textContent = 'Подтвердить запись';
+                
+                document.getElementById('successModal').style.display = 'block';
+                document.getElementById('overlay').classList.add('active');
             }, 1500);
         }
 
-        function renderBookings(filter) {
+        function renderBookings() {
             const list = document.getElementById('bookingsList');
-            let filtered = bookings;
-            if (filter === 'active') filtered = bookings.filter(b => b.status === 'active');
-            if (filter === 'past') filtered = bookings.filter(b => b.status === 'past');
-            if (filter === 'cancelled') filtered = bookings.filter(b => b.status.startsWith('cancelled'));
-
-            list.innerHTML = filtered.map(b => {
-                let badge = '';
-                if (b.status === 'active') badge = '<span class="status-badge status-active">Активна</span>';
-                if (b.status === 'past') badge = '<span class="status-badge status-past">Завершена</span>';
-                if (b.status === 'cancelled-gym') badge = '<span class="status-badge status-cancelled-gym">Отменена скалодромом</span>';
-                if (b.status === 'cancelled-client') badge = '<span class="status-badge status-cancelled">Отменена вами</span>';
-
-                return `
-                    <div class="booking-card" onclick="openDetails(${b.id})">
-                        <div class="slot-top">
-                            <div class="slot-time">${b.time}</div>
-                        </div>
-                        <div class="slot-title">${b.title}</div>
-                        <div style="font-size: 13px; color: #666; margin-top: 4px;">🎒 ${b.equip}</div>
-                        ${badge}
-                    </div>
-                `;
-            }).join('');
+            list.innerHTML = `
+                <div class="booking-card">
+                    <div class="slot-top"><div class="slot-time">Сегодня, 19:00</div></div>
+                    <div class="slot-title">Болдеринг для новичков</div>
+                    <span class="status-badge status-active">Активна</span>
+                </div>
+                <div class="booking-card">
+                    <div class="slot-top"><div class="slot-time">Пн, 18:00</div></div>
+                    <div class="slot-title">Трассы с верёвкой</div>
+                    <span class="status-badge status-past">Завершена</span>
+                </div>
+            `;
         }
-
         function filterBookings(type, el) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
-            renderBookings(type);
         }
 
-        function openDetails(id) {
-            currentBookingId = id;
-            const b = bookings.find(x => x.id === id);
-            const content = document.getElementById('detailsContent');
-            
-            let statusBadge = '', actionBtn = '', alertBlock = '';
-            
-            if (b.status === 'active') {
-                statusBadge = '<span class="status-badge status-active">Активна</span>';
-                actionBtn = `<button class="btn btn-danger" style="margin-top: 20px;" onclick="showCancelSheet(${b.hoursLeft})">Отменить запись</button>`;
-            } else if (b.status === 'cancelled-gym') {
-                statusBadge = '<span class="status-badge status-cancelled-gym">Отменена скалодромом</span>';
-                alertBlock = `<div class="alert-block">⚠️ <strong>Причина:</strong> ${b.reason}.<br>Повторная запись на этот слот недоступна.</div>`;
-            } else if (b.status === 'past') {
-                statusBadge = '<span class="status-badge status-past">Завершена</span>';
-                actionBtn = `<button class="btn btn-primary" style="margin-top: 20px;" onclick="showScreen('screen-rating')">⭐ Оценить инструктора</button>`;
-            }
-
-            content.innerHTML = `
-                <div class="detail-card">
-                    <div class="detail-title">${b.title}</div>
-                    <div class="detail-row"><span class="label">⏰ Время</span><span class="value">${b.time}</span></div>
-                    <div class="detail-row"><span class="label">👨‍🏫 Инструктор</span><span class="value">${b.instructor || '—'}</span></div>
-                    <div class="detail-row"><span class="label">🎒 Снаряжение</span><span class="value">${b.equip}</span></div>
-                    <div style="margin-top: 10px;">${statusBadge}</div>
-                    ${alertBlock}
-                    ${actionBtn}
-                </div>
-            `;
-            showScreen('screen-details');
-        }
-
-        function showCancelSheet(hoursLeft) {
-            const msg = document.getElementById('cancelMessage');
-            if (hoursLeft < 2) {
-                msg.innerHTML = `<strong style="color: #e65100;">До начала менее 2 часов.</strong><br>Место не освободится для других клиентов, но штраф не взимается.`;
-            } else {
-                msg.textContent = 'Место освободится, и другой клиент сможет записаться. Штрафов нет.';
-            }
-            document.getElementById('cancelSheet').style.display = 'block';
+        function openSheet(id) {
+            document.getElementById(id).style.display = 'block';
             document.getElementById('overlay').classList.add('active');
         }
-
-        function executeCancel() {
-            const b = bookings.find(x => x.id === currentBookingId);
-            if (b.hoursLeft < 2) {
-                b.status = 'late-cancel';
-            } else {
-                b.status = 'cancelled-client';
-            }
-            closeSheets();
-            openDetails(currentBookingId);
-            renderBookings('all');
-        }
-
-        function showDenial(icon, title, msg) {
-            document.getElementById('denialIcon').textContent = icon;
-            document.getElementById('denialTitle').textContent = title;
-            document.getElementById('denialMessage').textContent = msg;
-            document.getElementById('denialSheet').style.display = 'block';
-            document.getElementById('overlay').classList.add('active');
-        }
-
-        function closeSheets() {
+        function closeAllSheets() {
             document.getElementById('overlay').classList.remove('active');
-            document.getElementById('denialSheet').style.display = 'none';
-            document.getElementById('cancelSheet').style.display = 'none';
-        }
-
-        function renderNotifications() {
-            const list = document.getElementById('notificationsList');
-            let html = '';
-            let currentGroup = '';
-            
-            notifications.forEach(n => {
-                if (n.group !== currentGroup) {
-                    currentGroup = n.group;
-                    html += `<div class="notif-group-header">${currentGroup}</div>`;
-                }
-                html += `
-                    <div class="notif-card ${n.unread ? 'unread' : ''}">
-                        <div class="notif-icon">${n.icon}</div>
-                        <div class="notif-content">
-                            <div class="notif-title">${n.title}</div>
-                            <div class="notif-text">${n.text}</div>
-                            <div class="notif-time">${n.time}</div>
-                        </div>
-                        ${n.unread ? '<div class="unread-dot"></div>' : ''}
-                    </div>
-                `;
-            });
-            list.innerHTML = html;
-        }
-
-        function setRating(n) {
-            currentRating = n;
-            document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('active', i < n));
-            document.getElementById('submitRatingBtn').disabled = false;
-        }
-
-        function submitRating() {
-            const btn = document.getElementById('submitRatingBtn');
-            btn.innerHTML = '<div class="spinner"></div>';
-            btn.disabled = true;
-            setTimeout(() => {
-                alert('⭐ Спасибо за отзыв!');
-                btn.innerHTML = 'Отправить';
-                showScreen('screen-bookings');
-            }, 1000);
+            document.getElementById('filtersSheet').style.display = 'none';
+            document.getElementById('mapSheet').style.display = 'none';
+            document.getElementById('successModal').style.display = 'none';
         }
 
         function showScreen(id) {
