@@ -1,0 +1,44 @@
+# Клиент и запрос на обновление профиля.
+
+components:
+  schemas:
+    Client:
+      type: object
+      description: Клиент сервиса. Аутентифицируется по номеру телефона.
+      required:
+        - id
+        - phone
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор клиента.
+        name:
+          type: string
+          description: Имя клиента.
+          minLength: 1
+          maxLength: 100
+          example: Иван
+        phone:
+          type: string
+          description: Номер телефона в формате E.164.
+          pattern: '^\+7[0-9]{10}$'
+          example: '+79123456789'
+        created_at:
+          type: string
+          format: date-time
+          description: Дата и время регистрации.
+
+    UpdateProfileRequest:
+      type: object
+      description: Запрос на обновление профиля.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Имя клиента.
+          minLength: 1
+          maxLength: 100
+          example: Иван

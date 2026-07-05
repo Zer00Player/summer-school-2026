@@ -1,0 +1,33 @@
+# Инструктор — справочный объект (read-only).
+
+components:
+  schemas:
+    Instructor:
+      type: object
+      description: Инструктор, проводящий тренировку.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор инструктора.
+        name:
+          type: string
+          description: Имя инструктора.
+          example: Александр Иванов
+
+    InstructorListResponse:
+      type: object
+      description: Постраничный список инструкторов.
+      required:
+        - items
+        - meta
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Instructor'
+        meta:
+          $ref: '../common/models.yaml#/components/schemas/PaginationMeta'

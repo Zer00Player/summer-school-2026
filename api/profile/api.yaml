@@ -1,0 +1,146 @@
+openapi: 3.0.3
+
+info:
+  title: Скалодром API — Profile
+  description: Профиль клиента: просмотр, смена имени, смена телефона, удаление аккаунта.
+  version: 1.0.0
+
+servers:
+  - url: https://api.climbing-gym.ru/v1
+    description: Production
+
+tags:
+  - name: Profile
+    description: Профиль клиента
+
+security:
+  - bearerAuth: []
+
+paths:
+  /profile:
+    get:
+      tags:
+        - Profile
+      summary: Получить профиль
+      operationId: getProfile
+      description: Данные текущего клиента (только свои).
+      responses:
+        '200':
+          description: Профиль клиента
+          content:
+            application/json:
+              schema:
+                $ref: './models.yaml#/components/schemas/Client'
+        '401':
+          $ref: '../common/models.yaml#/components/responses/Unauthorized'
+        default:
+          $ref: '../common/models.yaml#/components/responses/InternalError'
+    patch:
+      tags:
+        - Profile
+      summary: Обновить имя
+      operationId: updateProfile
+      description: Смена имени без подтверждения кодом.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models.yaml#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Обновлённый профиль
+          content:
+            application/json:
+              schema:
+                $ref: './models.yaml#/components/schemas/Client'
+        '400':
+          $ref: '../common/models.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../common/models.yaml#/components/responses/Unauthorized'
+        default:
+          $ref: '../common/models.yaml#/components/responses/InternalError'
+    delete:
+      tags:
+        - Profile
+      summary: Удалить аккаунт
+      operationId: deleteAccount
+      description: |
+        Удаление аккаунта и персональных данных клиента.
+        
+        Последствия:
+        - Активные брони (status=active) аннулируются и освобождают места и снаряжение
+        - Прошедшие/завершённые брони анонимизируются
+        - Все сессии завершаются, push-токены удаляются
+      responses:
+        '204':
+          description: Аккаунт удалён
+        '401':
+          $ref: '../common/models.yaml#/components/responses/Unauthorized'
+        default:
+          $ref: '../common/models.yaml#/components/responses/InternalError'
+
+  /profile/phone/request-code:
+    post:
+      tags:
+        - Profile
+      summary: Запросить код для смены телефона
+      operationId: requestPhoneChangeCode
+      description: Смена телефона подтверждается кодом из SMS на новый номер.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../auth/models.yaml#/components/schemas/ChangePhoneRequestCodeRequest'
+      responses:
+        '200':
+          description: Код успешно отправлен
+          content:
+            application/json:
+              schema:
+                $ref: '../auth/models.yaml#/components/schemas/RequestCodeResponse'
+        '400':
+          $ref: '../common/models.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../common/models.yaml#/components/responses/Unauthorized'
+        '409':
+          $ref: '../common/models.yaml#/components/responses/Conflict'
+        '429':
+          $ref: '../common/models.yaml#/components/responses/TooManyRequests'
+        default:
+          $ref: '../common/models.yaml#/components/responses/InternalError'
+
+  /profile/phone/confirm:
+    post:
+      tags:
+        - Profile
+      summary: Подтвердить смену телефона
+      operationId: confirmPhoneChange
+      description: Подтверждает новый номер кодом и обновляет phone клиента.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../auth/models.yaml#/components/schemas/ChangePhoneConfirmRequest'
+      responses:
+        '200':
+          description: Обновлённый профиль
+          content:
+            application/json:
+              schema:
+                $ref: './models.yaml#/components/schemas/Client'
+        '400':
+          $ref: '../common/models.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../common/models.yaml#/components/responses/Unauthorized'
+        '409':
+          $ref: '../common/models.yaml#/components/responses/Conflict'
+        default:
+          $ref: '../common/models.yaml#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: '../auth/models.yaml#/components/securitySchemes/bearerAuth'

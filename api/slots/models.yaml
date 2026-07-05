@@ -1,0 +1,225 @@
+# Слот (тренировка) — read-only-проекция и его представления.
+
+components:
+  schemas:
+    RouteType:
+      type: string
+      description: Тип маршрута — новичковый (novice) или опытный (experienced).
+      enum:
+        - novice
+        - experienced
+
+    Geometry:
+      description: Геометрия маршрута для отрисовки линии на карте.
+      oneOf:
+        - type: array
+          description: Массив координат точек маршрута.
+          items:
+            type: array
+            minItems: 2
+            maxItems: 2
+            items:
+              type: number
+              format: double
+        - type: string
+          description: Закодированная полилиния (encoded polyline).
+
+    Route:
+      type: object
+      description: Маршрут тренировки. Справочник, доступен только для чтения.
+      required:
+        - id
+        - name
+        - type
+        - capacity_cap
+        - duration_min
+        - geometry
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор маршрута.
+        name:
+          type: string
+          description: Название маршрута.
+          example: Скалодром «Высота»
+        description:
+          type: string
+          nullable: true
+          description: Описание маршрута.
+          example: Тренировка на искусственном рельефе с элементами лазания
+        type:
+          $ref: '#/components/schemas/RouteType'
+        capacity_cap:
+          type: integer
+          description: Потолок числа мест. Новичковый — не более 8, опытный — не более 12.
+          example: 8
+        duration_min:
+          type: integer
+          description: Продолжительность тренировки в минутах (обычно 90-120).
+          example: 90
+        geometry:
+          $ref: '#/components/schemas/Geometry'
+
+    Instructor:
+      type: object
+      description: Инструктор, проводящий тренировку.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор инструктора.
+        name:
+          type: string
+          description: Имя инструктора.
+          example: Александр
+
+    SlotStatus:
+      type: string
+      description: Статус слота.
+      enum:
+        - scheduled
+        - cancelled
+
+    Slot:
+      type: object
+      description: |
+        Полная карточка слота (конкретный сеанс тренировки на дату/время).
+        Доступен только для чтения.
+      required:
+        - id
+        - start_at
+        - route
+        - instructor
+        - total_seats
+        - free_seats
+        - free_rental_boards
+        - price
+        - rental_price
+        - meeting_point
+        - meeting_point_lat
+        - meeting_point_lng
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор слота.
+        start_at:
+          type: string
+          format: date-time
+          description: Дата и время начала тренировки в UTC.
+        route:
+          $ref: '#/components/schemas/Route'
+        instructor:
+          $ref: '#/components/schemas/Instructor'
+        total_seats:
+          type: integer
+          minimum: 1
+          description: Общее число мест в слоте.
+          example: 8
+        free_seats:
+          type: integer
+          minimum: 0
+          description: |
+            Число свободных мест (расчётное).
+            К брони доступно max_seats = min(free_seats, route.capacity_cap, 3).
+          example: 5
+        free_rental_boards:
+          type: integer
+          minimum: 0
+          description: |
+            Число свободных комплектов прокатного снаряжения (из общего фонда).
+            Ограничивает rental_count в брони.
+          example: 7
+        price:
+          type: integer
+          minimum: 0
+          description: Цена за одно место, в рублях.
+          example: 1500
+        rental_price:
+          type: integer
+          minimum: 0
+          description: Цена проката за один комплект снаряжения, в рублях.
+          example: 500
+        meeting_point:
+          type: string
+          description: Адрес или ориентир места встречи.
+          example: Скалодром «Высота», ул. Спортивная, д. 10
+        meeting_point_lat:
+          type: number
+          format: float
+          description: Широта места встречи.
+          example: 59.978
+        meeting_point_lng:
+          type: number
+          format: float
+          description: Долгота места встречи.
+          example: 30.262
+        status:
+          $ref: '#/components/schemas/SlotStatus'
+
+    SlotSummary:
+      type: object
+      description: Урезанное представление слота для списка.
+      required:
+        - id
+        - start_at
+        - route
+        - instructor
+        - price
+        - rental_price
+        - total_seats
+        - free_seats
+        - free_rental_boards
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        start_at:
+          type: string
+          format: date-time
+        route:
+          $ref: '#/components/schemas/Route'
+        instructor:
+          $ref: '#/components/schemas/Instructor'
+        price:
+          type: integer
+          minimum: 0
+          example: 1500
+        rental_price:
+          type: integer
+          minimum: 0
+          example: 500
+        total_seats:
+          type: integer
+          minimum: 1
+          example: 8
+        free_seats:
+          type: integer
+          minimum: 0
+          example: 5
+        free_rental_boards:
+          type: integer
+          minimum: 0
+          example: 7
+        status:
+          $ref: '#/components/schemas/SlotStatus'
+
+    SlotListResponse:
+      type: object
+      description: Постраничный список слотов.
+      required:
+        - items
+        - meta
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlotSummary'
+        meta:
+          $ref: '../common/models.yaml#/components/schemas/PaginationMeta'

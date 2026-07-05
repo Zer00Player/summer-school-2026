@@ -1,0 +1,90 @@
+openapi: 3.0.3
+
+info:
+  title: Скалодром API — Клиентское приложение
+  description: |
+    API для клиентского мобильного приложения скалодрома.
+    
+    ## Бизнес-контекст
+    - Клиенты записываются на тренировки (слоты) с выбором количества мест и прокатного снаряжения
+    - Отмена бронирования зависит от времени до старта (граница 2 часа)
+    - Сервер является источником истины по доступности мест и времени
+    
+    ## Скоуп
+    - Только роль "Клиент"
+    - Без онлайн-оплат (учет наличных/перевод вне приложения)
+    - Работа с данными в реальном времени (без кэширования)
+    
+    ## Контракты
+    - Все даты и время в UTC
+    - Все цены в рублях (RUB)
+    - Idempotency-Key обязателен для создания брони
+  version: 1.0.0
+  contact:
+    name: Support
+    email: support@climbing-gym.ru
+
+servers:
+  - url: https://api.climbing-gym.ru/v1
+    description: Production сервер
+  - url: https://staging-api.climbing-gym.ru/v1
+    description: Staging сервер
+
+tags:
+  - name: Auth
+    description: Аутентификация по телефону и OTP
+  - name: Slots
+    description: Расписание и слоты (только чтение)
+  - name: Bookings
+    description: Бронирования (создание, просмотр, отмена)
+  - name: Instructors
+    description: Справочник инструкторов
+  - name: Profile
+    description: Профиль клиента
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: './auth/models.yaml#/components/securitySchemes/bearerAuth'
+
+paths:
+  # Auth
+  /auth/request-code:
+    $ref: './auth/api.yaml#/paths/~1auth~1request-code'
+  /auth/verify-code:
+    $ref: './auth/api.yaml#/paths/~1auth~1verify-code'
+  /auth/refresh:
+    $ref: './auth/api.yaml#/paths/~1auth~1refresh'
+  /auth/logout:
+    $ref: './auth/api.yaml#/paths/~1auth~1logout'
+  /auth/push-tokens:
+    $ref: './auth/api.yaml#/paths/~1auth~1push-tokens'
+  
+  # Slots
+  /slots:
+    $ref: './slots/api.yaml#/paths/~1slots'
+  /slots/{slotId}:
+    $ref: './slots/api.yaml#/paths/~1slots~1{slotId}'
+  
+  # Bookings
+  /bookings:
+    $ref: './bookings/api.yaml#/paths/~1bookings'
+  /bookings/{bookingId}:
+    $ref: './bookings/api.yaml#/paths/~1bookings~1{bookingId}'
+  /bookings/{bookingId}/cancel:
+    $ref: './bookings/api.yaml#/paths/~1bookings~1{bookingId}~1cancel'
+  
+  # Instructors
+  /instructors:
+    $ref: './instructors/api.yaml#/paths/~1instructors'
+  
+  # Profile
+  /profile:
+    $ref: './profile/api.yaml#/paths/~1profile'
+  /profile/phone/request-code:
+    $ref: './profile/api.yaml#/paths/~1profile~1phone~1request-code'
+  /profile/phone/confirm:
+    $ref: './profile/api.yaml#/paths/~1profile~1phone~1confirm'

@@ -1,0 +1,336 @@
+# Сквозные объекты: общая схема ошибки, метаданные пагинации,
+# переиспользуемые параметры запроса и типовые ответы-ошибки.
+
+components:
+  schemas:
+    Error:
+      type: object
+      description: Стандартное тело ошибки.
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: |
+            Канонический машинный код ошибки.
+            
+            Доменные коды:
+            - slot_full — нет свободных мест
+            - rental_unavailable — нет прокатного снаряжения
+            - double_booking — повторная бронь того же слота
+            - slot_cancelled — слот отменён клубом
+            - slot_started — слот уже стартовал
+            - already_cancelled — бронь уже отменена
+            - invalid_code — неверный/истёкший OTP
+            - idempotency_key_conflict — повтор ключа с другим телом
+            
+            Транспортные коды:
+            - bad_request — 400
+            - unauthorized — 401
+            - forbidden — 403
+            - not_found — 404
+            - too_many_requests — 429
+            - internal_error — 5xx
+          enum:
+            - slot_full
+            - rental_unavailable
+            - double_booking
+            - slot_cancelled
+            - slot_started
+            - already_cancelled
+            - invalid_code
+            - idempotency_key_conflict
+            - bad_request
+            - unauthorized
+            - forbidden
+            - not_found
+            - too_many_requests
+            - internal_error
+          example: slot_full
+        message:
+          type: string
+          description: Человекочитаемое сообщение об ошибке.
+          example: Свободных мест больше нет.
+        details:
+          type: object
+          description: |
+            Необязательные машиночитаемые детали для динамических сообщений на клиенте.
+          properties:
+            available_seats:
+              type: integer
+              description: Сколько мест реально свободно на момент ошибки.
+              example: 2
+            available_rental_boards:
+              type: integer
+              description: Сколько прокатных досок реально свободно.
+              example: 1
+            booking_id:
+              type: string
+              format: uuid
+              description: ID существующей брони (для double_booking).
+
+    PaginationMeta:
+      type: object
+      description: Метаданные постраничной выдачи.
+      required:
+        - limit
+        - offset
+        - total
+      properties:
+        limit:
+          type: integer
+          description: Размер страницы.
+          example: 20
+        offset:
+          type: integer
+          description: Смещение от начала выборки.
+          example: 0
+        total:
+          type: integer
+          description: Общее число элементов.
+          example: 42
+
+  parameters:
+    LimitParam:
+      in: query
+      name: limit
+      required: false
+      description: Максимальное число элементов в выдаче
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    OffsetParam:
+      in: query
+      name: offset
+      required: false
+      description: Смещение от начала выдачи
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    SlotIdParam:
+      in: path
+      name: slotId
+      required: true
+      description: Идентификатор слота
+      schema:
+        type: string
+        format: uuid
+
+    BookingIdParam:
+      in: path
+      name: bookingId
+      required: true
+      description: Идентификатор бронирования
+      schema:
+        type: string
+        format: uuid
+
+    BookingStatusParam:
+      in: query
+      name: status
+      required: false
+      style: form
+      explode: true
+      description: |
+        Фильтр броней по статусу (множественный выбор, OR внутри группы).
+        Без параметра возвращаются брони всех статусов.
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - active
+            - cancelled
+            - late_cancel
+            - club_cancelled
+
+    DateFromParam:
+      in: query
+      name: date_from
+      required: false
+      description: |
+        Фильтр: слоты со стартом не раньше указанного момента (граница включительна).
+        По умолчанию — текущий момент.
+      schema:
+        type: string
+        format: date-time
+
+    DateToParam:
+      in: query
+      name: date_to
+      required: false
+      description: |
+        Фильтр: слоты со стартом не позже указанного момента (граница включительна).
+        По умолчанию — date_from + 7 дней.
+      schema:
+        type: string
+        format: date-time
+
+    RouteTypeParam:
+      in: query
+      name: route_type
+      required: false
+      style: form
+      explode: true
+      description: |
+        Тип маршрута (множественный выбор). Значения внутри группы объединяются по OR.
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - novice
+            - experienced
+
+    InstructorIdParam:
+      in: query
+      name: instructor_id
+      required: false
+      style: form
+      explode: true
+      description: |
+        Идентификаторы инструкторов (множественный выбор). Значения внутри группы объединяются по OR.
+      schema:
+        type: array
+        items:
+          type: string
+          format: uuid
+
+    OnlyAvailableParam:
+      in: query
+      name: only_available
+      required: false
+      description: Только слоты со свободными местами (free_seats > 0). По умолчанию false.
+      schema:
+        type: boolean
+        default: false
+
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: |
+        Уникальный ключ идемпотентности (UUID) для безопасного повтора при сетевом сбое.
+        Хранится ≥24 ч; повтор с тем же ключом и телом → тот же ответ.
+
+  responses:
+    BadRequest:
+      description: Неверные параметры запроса.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: bad_request
+            message: Неверные параметры запроса.
+
+    Unauthorized:
+      description: Отсутствует или неверен токен авторизации.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: unauthorized
+            message: Требуется авторизация.
+
+    Forbidden:
+      description: Попытка доступа к чужим данным.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: forbidden
+            message: Доступ запрещён.
+
+    NotFound:
+      description: Запрашиваемый ресурс не найден.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: not_found
+            message: Ресурс не найден.
+
+    Conflict:
+      description: |
+        Нарушение инварианта:
+        - нет свободных мест (slot_full)
+        - нет прокатного снаряжения (rental_unavailable)
+        - двойная бронь (double_booking)
+        - повторная отмена (already_cancelled)
+        - повтор Idempotency-Key с другим телом (idempotency_key_conflict)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            slot_full:
+              value:
+                code: slot_full
+                message: На выбранной тренировке не осталось свободных мест.
+                details:
+                  available_seats: 0
+            rental_unavailable:
+              value:
+                code: rental_unavailable
+                message: Недостаточно прокатного снаряжения.
+                details:
+                  available_rental_boards: 1
+            double_booking:
+              value:
+                code: double_booking
+                message: Вы уже записаны на эту тренировку.
+                details:
+                  booking_id: 123e4567-e89b-12d3-a456-426614174000
+
+    Gone:
+      description: Слот отменён (status=cancelled).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: slot_cancelled
+            message: Тренировка отменена и более недоступна для записи.
+
+    UnprocessableEntity:
+      description: Операция невозможна по бизнес-правилу (например, слот уже стартовал).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: slot_started
+            message: Тренировка уже началась, операция недоступна.
+
+    TooManyRequests:
+      description: Слишком частые запросы.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: too_many_requests
+            message: Слишком много запросов. Повторите попытку позже.
+
+    InternalError:
+      description: Внутренняя ошибка сервиса.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: internal_error
+            message: Что-то пошло не так. Попробуйте ещё раз позже.

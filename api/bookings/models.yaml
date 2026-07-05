@@ -1,0 +1,188 @@
+# Бронь и её представления.
+
+components:
+  schemas:
+    BookingStatus:
+      type: string
+      description: |
+        Статус брони:
+        - active — активна
+        - cancelled — отменена клиентом (ранняя, ≥2ч до старта)
+        - late_cancel — отменена клиентом (поздняя, <2ч до старта)
+        - club_cancelled — отменена клубом (не по инициативе клиента)
+      enum:
+        - active
+        - cancelled
+        - late_cancel
+        - club_cancelled
+
+    CreateBookingRequest:
+      type: object
+      description: Запрос на создание брони.
+      required:
+        - slot_id
+        - seats_count
+        - rental_count
+      properties:
+        slot_id:
+          type: string
+          format: uuid
+          description: Идентификатор слота.
+        seats_count:
+          type: integer
+          description: Число мест (1-3).
+          minimum: 1
+          maximum: 3
+          example: 2
+        rental_count:
+          type: integer
+          description: Число комплектов прокатного снаряжения (0..seats_count).
+          minimum: 0
+          maximum: 3
+          example: 1
+
+    Booking:
+      type: object
+      description: Полные данные брони для экрана деталей.
+      required:
+        - id
+        - slot_id
+        - client_id
+        - seats_count
+        - rental_count
+        - status
+        - price_total
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор брони.
+        slot_id:
+          type: string
+          format: uuid
+          description: Идентификатор слота.
+        client_id:
+          type: string
+          format: uuid
+          description: Идентификатор клиента.
+        seats_count:
+          type: integer
+          minimum: 1
+          maximum: 3
+          example: 2
+        rental_count:
+          type: integer
+          minimum: 0
+          maximum: 3
+          example: 1
+        status:
+          $ref: '#/components/schemas/BookingStatus'
+        price_total:
+          type: integer
+          readOnly: true
+          description: |
+            Итоговая цена в рублях.
+            READ-ONLY — рассчитывается сервером как price × seats_count + rental_price × rental_count.
+          example: 3500
+        created_at:
+          type: string
+          format: date-time
+          description: Дата и время создания брони.
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Дата и время отмены.
+        cancellation_reason:
+          type: string
+          nullable: true
+          readOnly: true
+          description: |
+            Причина отмены. Заполняется при club_cancelled (текст причины от клуба).
+          example: Тренировка отменена по техническим причинам
+        slot:
+          $ref: '../slots/models.yaml#/components/schemas/Slot'
+
+    CreateBookingResponse:
+      type: object
+      description: Ответ на создание брони.
+      allOf:
+        - $ref: '#/components/schemas/Booking'
+        - type: object
+          required:
+            - is_first_booking
+          properties:
+            is_first_booking:
+              type: boolean
+              description: true, если это первая успешная бронь клиента.
+              example: true
+            reminder_hours:
+              type: array
+              description: За сколько часов до старта будут отправлены напоминания.
+              items:
+                type: integer
+              example: [24, 2]
+
+    BookingSummary:
+      type: object
+      description: Урезанное представление брони для списка.
+      required:
+        - id
+        - slot_id
+        - seats_count
+        - rental_count
+        - status
+        - price_total
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        slot_id:
+          type: string
+          format: uuid
+        seats_count:
+          type: integer
+          minimum: 1
+          maximum: 3
+          example: 2
+        rental_count:
+          type: integer
+          minimum: 0
+          maximum: 3
+          example: 1
+        status:
+          $ref: '#/components/schemas/BookingStatus'
+        price_total:
+          type: integer
+          readOnly: true
+          example: 3500
+        created_at:
+          type: string
+          format: date-time
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancellation_reason:
+          type: string
+          nullable: true
+          readOnly: true
+          example: Тренировка отменена по техническим причинам
+        slot:
+          $ref: '../slots/models.yaml#/components/schemas/SlotSummary'
+
+    BookingListResponse:
+      type: object
+      description: Постраничный список броней.
+      required:
+        - items
+        - meta
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingSummary'
+        meta:
+          $ref: '../common/models.yaml#/components/schemas/PaginationMeta'
